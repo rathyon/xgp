@@ -5,7 +5,7 @@
 using namespace xgp;
 
 XGPApp::XGPApp(const std::string title, int width, int height)
-: _title(title), _width(width) , _height(height), _window(nullptr) {
+	: _title(title), _width(width) , _height(height), _window(nullptr) {
 }
 
 void XGPApp::init() {
@@ -15,7 +15,7 @@ void XGPApp::init() {
 
 	//My machine supports up to OpenGL 4.6
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	_window = glfwCreateWindow(_width, _height, _title.c_str(), NULL, NULL);
@@ -99,7 +99,7 @@ void XGPApp::cleanup() {
 	glfwTerminate();
 }
 
-GLFWwindow* XGPApp::window() {
+GLFWwindow* XGPApp::window() const {
 	return _window;
 }
 

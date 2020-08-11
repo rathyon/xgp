@@ -19,7 +19,7 @@ namespace xgp {
 		void setTitle(const std::string& title);
 		void cleanup();
 
-		GLFWwindow* window();
+		GLFWwindow* window() const;
 
 		void errorCallback(int error, const char* description);
 		void reshapeCallback(int width, int height);
