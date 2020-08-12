@@ -48,7 +48,7 @@ const std::string& ShaderSource::source() const {
 }
 
 bool ShaderSource::compile() {
-    if (id != 0) {
+    if (_id != 0) {
         std::cerr << "ERROR: Shader has already been compiled: " << _name << std::endl;
         return false;
     }
@@ -102,7 +102,7 @@ bool Shader::link() {
 
     // Create program and check for errors
     _id = glCreateProgram();
-    if (id == 0) {
+    if (_id == 0) {
         GLint logLen;
         glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &logLen);    
 
@@ -127,8 +127,19 @@ bool Shader::link() {
         const GLubyte* errString;
         while ((errCode = glGetError()) != GL_NO_ERROR) {
             isError = true;
-            errString = gluErrorString(errCode);
-            std::cerr << "OpenGL ERROR [" << errString << "]." << std::endl;
+
+            switch (errCode)
+            {
+            case GL_INVALID_ENUM:
+                std::cerr << "OpenGL ERROR [" << "Invalid Enum" << "]." << std::endl;
+                break;
+            case GL_INVALID_VALUE:
+                std::cerr << "OpenGL ERROR [" << "Invalid value" << "]." << std::endl;
+                break;
+            case GL_INVALID_OPERATION:
+                std::cerr << "OpenGL ERROR [" << "Invalid operation" << "]." << std::endl;
+                break;
+            }
         }
         if (isError)
             std::cerr << "Could not attach shader " << std::to_string(sid) << " to program " << _name << " (" << std::to_string(_id) << " )" << std::endl;

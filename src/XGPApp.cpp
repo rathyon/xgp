@@ -62,6 +62,12 @@ void XGPApp::init() {
 
 	// time since GLFW was initialized, in seconds
 	_oldTime = glfwGetTime();
+
+	prepare();
+}
+
+void XGPApp::prepare() {
+
 }
 
 void XGPApp::loop() {

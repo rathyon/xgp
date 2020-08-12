@@ -28,6 +28,7 @@ namespace xgp {
 		void mousePosCallback(double xpos, double ypos);
 
 	private:
+		void prepare();
 
 		GLFWwindow* _window;
 		int _width, _height;

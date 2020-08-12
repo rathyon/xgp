@@ -21,9 +21,15 @@
     <ClCompile Include="..\..\src\XGPApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\XGPApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
