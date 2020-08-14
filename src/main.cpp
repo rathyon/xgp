@@ -5,10 +5,10 @@ using namespace xgp;
 
 /*
 	TODO:
+			Model class (loaded from obj)
 
-	Perspective class
-	Model class
-	Material class
+	Image class
+	Texture class
 	Scene class
 
 */

@@ -96,7 +96,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Programming\xgp\ext;F:\Programming\xgp\ext\glfw\include;F:\Programming\xgp\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Programming\xgp\ext\tinyobj;F:\Programming\xgp\ext;F:\Programming\xgp\ext\glfw\include;F:\Programming\xgp\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,7 +139,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Programming\xgp\ext;F:\Programming\xgp\ext\glfw\include;F:\Programming\xgp\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Programming\xgp\ext\tinyobj;F:\Programming\xgp\ext;F:\Programming\xgp\ext\glfw\include;F:\Programming\xgp\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -178,15 +178,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Camera.cpp" />
+    <ClCompile Include="..\..\src\Geometry.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
+    <ClCompile Include="..\..\src\Material.cpp" />
+    <ClCompile Include="..\..\src\BlinnPhongMaterial.cpp" />
+    <ClCompile Include="..\..\src\Model.cpp" />
+    <ClCompile Include="..\..\src\Perspective.cpp" />
     <ClCompile Include="..\..\src\SceneObject.cpp" />
     <ClCompile Include="..\..\src\Shader.cpp" />
+    <ClCompile Include="..\..\src\Shape.cpp" />
     <ClCompile Include="..\..\src\XGPApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Camera.h" />
+    <ClInclude Include="..\..\src\Geometry.h" />
+    <ClInclude Include="..\..\src\Material.h" />
+    <ClInclude Include="..\..\src\BlinnPhongMaterial.h" />
+    <ClInclude Include="..\..\src\Model.h" />
+    <ClInclude Include="..\..\src\Perspective.h" />
     <ClInclude Include="..\..\src\SceneObject.h" />
     <ClInclude Include="..\..\src\Shader.h" />
+    <ClInclude Include="..\..\src\Shape.h" />
     <ClInclude Include="..\..\src\XGPApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

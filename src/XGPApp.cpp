@@ -1,5 +1,6 @@
 #include "XGPApp.h"
 
+#include "Geometry.h"
 #include <iostream>
 
 using namespace xgp;

@@ -3,7 +3,8 @@
 using namespace xgp;
 
 Camera::Camera(int width, int height, const glm::vec3& eye,
-	const glm::vec3& at, const glm::vec3& up, float near, float far) {
+	const glm::vec3& at, const glm::vec3& up, float near, float far)
+	: _width(width), _height(height), _near(near), _far(far){
 
 	_position = eye;
 	_objToWorld = glm::lookAt(eye, at, up);
