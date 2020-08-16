@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <Utils.h>
+
 using namespace xgp;
 
 ShaderSource::ShaderSource(GLenum shaderType, const std::string& filepath)
@@ -121,28 +123,7 @@ bool Shader::link() {
     // Attach shaders and check for attachment errors
     for (GLuint sid : _shaders) {
         glAttachShader(_id, sid);
-
-        bool isError = false;
-        GLenum errCode;
-        const GLubyte* errString;
-        while ((errCode = glGetError()) != GL_NO_ERROR) {
-            isError = true;
-
-            switch (errCode)
-            {
-            case GL_INVALID_ENUM:
-                std::cerr << "OpenGL ERROR [" << "Invalid Enum" << "]." << std::endl;
-                break;
-            case GL_INVALID_VALUE:
-                std::cerr << "OpenGL ERROR [" << "Invalid value" << "]." << std::endl;
-                break;
-            case GL_INVALID_OPERATION:
-                std::cerr << "OpenGL ERROR [" << "Invalid operation" << "]." << std::endl;
-                break;
-            }
-        }
-        if (isError)
-            std::cerr << "Could not attach shader " << std::to_string(sid) << " to program " << _name << " (" << std::to_string(_id) << " )" << std::endl;
+        Utils::checkOpenGLError("Could not attach shader " + std::to_string(sid) + " to program " + _name + " (" + std::to_string(_id) + " )");
     }
 
     glLinkProgram(_id);

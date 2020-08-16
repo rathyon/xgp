@@ -20,11 +20,15 @@ namespace std {
 
 Geometry::Geometry() { }
 
+const GLuint Geometry::VAO() const {
+    return _vao;
+}
+
 const std::vector<Vertex>& Geometry::vertices() const {
     return _vertices;
 }
 
-const std::vector<uint32_t>& Geometry::indices() const {
+const std::vector<GLuint>& Geometry::indices() const {
     return _indices;
 }
 
@@ -65,7 +69,7 @@ bool Geometry::loadObj(const std::string& filePath) {
             };
 
             if (uniqueVertices.count(objVertex) == 0) {
-                uniqueVertices[objVertex] = static_cast<uint32_t>(_vertices.size());
+                uniqueVertices[objVertex] = static_cast<GLuint>(_vertices.size());
 
                 // includes (empty) tangent attribute
                 Vertex vertex{};
@@ -121,4 +125,36 @@ void Geometry::computeTangents() {
     for (int i = 0; i < _vertices.size(); i++) {
         _vertices[i].tangent = glm::normalize(_vertices[i].tangent);
     }
+}
+
+void Geometry::upload() {
+    glGenVertexArrays(1, &_vao);
+    glBindVertexArray(_vao);
+
+    // 2 VBOs per VAO: vertices + indices
+    GLuint VBOs[2] = { 0, 0 };
+    glGenBuffers(2, VBOs);
+
+    // vertex buffer
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * _vertices.size(), &_vertices[0], GL_STATIC_DRAW);
+
+    // vertex buffer attribute layout
+    glEnableVertexAttribArray(AttribType::POSITION);
+    glVertexAttribPointer(AttribType::POSITION, 3, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+    glEnableVertexAttribArray(AttribType::NORMAL);
+    glVertexAttribPointer(AttribType::NORMAL, 3, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(Vertex), (const void*)offsetof(Vertex, normal));
+    glEnableVertexAttribArray(AttribType::UV);
+    glVertexAttribPointer(AttribType::UV, 2, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(Vertex), (const void*)offsetof(Vertex, texCoord));
+    glEnableVertexAttribArray(AttribType::TANGENT);
+    glVertexAttribPointer(AttribType::TANGENT, 3, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(Vertex), (const void*)offsetof(Vertex, tangent));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // index buffer
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOs[1]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * _indices.size(), &_indices[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);
 }

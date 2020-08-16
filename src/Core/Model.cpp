@@ -46,7 +46,9 @@ Model::Model(const std::string& objPath, const glm::mat4& objToWorld)
 }
 
 void Model::prepare() {
-    // Upload geometry to the GPU
+    //potentially other things...
+
+    _geometry->upload();
 }
 
 void Model::draw() {
@@ -60,8 +62,10 @@ void Model::draw() {
     if (_material)
         _material->uploadData();
 
-    // TODO:
-    // draw geometry
+    glBindVertexArray(_geometry->VAO());
+    //glDrawArrays(GL_TRIANGLES, 0, _geometry->vertices().size());
+    glDrawElements(GL_TRIANGLES, _geometry->indices().size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 
     glUseProgram(0);
 }
