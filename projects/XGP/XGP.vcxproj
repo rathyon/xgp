@@ -23,6 +23,8 @@
     <ClInclude Include="..\..\src\Core\Geometry.h" />
     <ClInclude Include="..\..\src\Core\Model.h" />
     <ClInclude Include="..\..\src\Core\Perspective.h" />
+    <ClInclude Include="..\..\src\Core\Resources.h" />
+    <ClInclude Include="..\..\src\Core\Scene.h" />
     <ClInclude Include="..\..\src\Core\SceneObject.h" />
     <ClInclude Include="..\..\src\Core\Shape.h" />
     <ClInclude Include="..\..\src\Graphics\BlinnPhongMaterial.h" />
@@ -30,6 +32,10 @@
     <ClInclude Include="..\..\src\Graphics\Material.h" />
     <ClInclude Include="..\..\src\Graphics\Shader.h" />
     <ClInclude Include="..\..\src\Graphics\Texture.h" />
+    <ClInclude Include="..\..\src\Lights\DirectionalLight.h" />
+    <ClInclude Include="..\..\src\Lights\Light.h" />
+    <ClInclude Include="..\..\src\Lights\PointLight.h" />
+    <ClInclude Include="..\..\src\Lights\SpotLight.h" />
     <ClInclude Include="..\..\src\Utils\Utils.h" />
     <ClInclude Include="..\..\src\XGPApp.h" />
   </ItemGroup>
@@ -38,6 +44,8 @@
     <ClCompile Include="..\..\src\Core\Geometry.cpp" />
     <ClCompile Include="..\..\src\Core\Model.cpp" />
     <ClCompile Include="..\..\src\Core\Perspective.cpp" />
+    <ClCompile Include="..\..\src\Core\Resources.cpp" />
+    <ClCompile Include="..\..\src\Core\Scene.cpp" />
     <ClCompile Include="..\..\src\Core\SceneObject.cpp" />
     <ClCompile Include="..\..\src\Core\Shape.cpp" />
     <ClCompile Include="..\..\src\Graphics\BlinnPhongMaterial.cpp" />
@@ -45,6 +53,10 @@
     <ClCompile Include="..\..\src\Graphics\Material.cpp" />
     <ClCompile Include="..\..\src\Graphics\Shader.cpp" />
     <ClCompile Include="..\..\src\Graphics\Texture.cpp" />
+    <ClCompile Include="..\..\src\Lights\DirectionalLight.cpp" />
+    <ClCompile Include="..\..\src\Lights\Light.cpp" />
+    <ClCompile Include="..\..\src\Lights\PointLight.cpp" />
+    <ClCompile Include="..\..\src\Lights\SpotLight.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\Utils\Utils.cpp" />
     <ClCompile Include="..\..\src\XGPApp.cpp" />
@@ -127,7 +139,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Programming\xgp\src\Utils;F:\Programming\xgp\ext\stb_image;F:\Programming\xgp\src\Graphics;F:\Programming\xgp\src\Core;F:\Programming\xgp\src;F:\Programming\xgp\ext\tinyobj;F:\Programming\xgp\ext;F:\Programming\xgp\ext\glfw\include;F:\Programming\xgp\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Programming\xgp\src\Lights;F:\Programming\xgp\src\Utils;F:\Programming\xgp\ext\stb_image;F:\Programming\xgp\src\Graphics;F:\Programming\xgp\src\Core;F:\Programming\xgp\src;F:\Programming\xgp\ext\tinyobj;F:\Programming\xgp\ext;F:\Programming\xgp\ext\glfw\include;F:\Programming\xgp\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -170,7 +183,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Programming\xgp\src\Utils;F:\Programming\xgp\ext\stb_image;F:\Programming\xgp\src\Graphics;F:\Programming\xgp\src\Core;F:\Programming\xgp\src;F:\Programming\xgp\ext\tinyobj;F:\Programming\xgp\ext;F:\Programming\xgp\ext\glfw\include;F:\Programming\xgp\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Programming\xgp\src\Lights;F:\Programming\xgp\src\Utils;F:\Programming\xgp\ext\stb_image;F:\Programming\xgp\src\Graphics;F:\Programming\xgp\src\Core;F:\Programming\xgp\src;F:\Programming\xgp\ext\tinyobj;F:\Programming\xgp\ext;F:\Programming\xgp\ext\glfw\include;F:\Programming\xgp\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

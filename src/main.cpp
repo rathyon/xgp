@@ -6,10 +6,14 @@ using namespace xgp;
 /*
 	TODO:
 
-	Material loading/manual setting
-	ResourceManager class
+	Light class
+		DirectionalLight
+		Pointlight
+		Spotlight
+	Viewport camera movement with keys and mouse movement
 	Integrate ResourceManager into other classes
-	Scene class
+	Material loading (optional)
+	Add Support for multiple lights (inject text into shader)
 
 */
 

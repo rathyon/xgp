@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <unordered_map>
+#include <filesystem>
 
 using namespace xgp;
 
@@ -19,6 +20,10 @@ namespace std {
 }
 
 Geometry::Geometry() { }
+
+const std::string& Geometry::name() const {
+    return _name;
+}
 
 const GLuint Geometry::VAO() const {
     return _vao;
@@ -43,6 +48,11 @@ bool Geometry::loadObj(const std::string& filePath) {
     }
     std::cout << objReader.Warning() << std::endl;
 
+    std::filesystem::path p = std::filesystem::path(filePath);
+    if (!std::filesystem::exists(p))
+        return false;
+
+    _name = p.filename().string();
     tinyobj::attrib_t attrib = objReader.GetAttrib();
 
     std::unordered_map<ObjVertex, unsigned int> uniqueVertices{};

@@ -6,7 +6,15 @@
 
 #include <string>
 
+#include <Camera.h>
+#include <Scene.h>
+
 namespace xgp {
+
+	enum BufferIndices {
+		CAMERA_BUFFER_IDX = 0,
+		LIGHTS_BUFFER_IDX = 1,
+	};
 
 	class XGPApp {
 	public:
@@ -29,11 +37,22 @@ namespace xgp {
 
 	private:
 		void prepare();
+		void uploadCameraData();
+		void uploadLightData();
 
 		GLFWwindow* _window;
 		int _width, _height;
 		std::string _title;
 		double _oldTime;
+
+		Camera* _mainCamera;
+		GLuint _mainCameraBuffer;
+
+		// Temporary, just for testing
+		std::shared_ptr<Light> _mainLight;
+		GLuint _mainLightBuffer;
+
+		Scene _scene;
 	};
 }
 

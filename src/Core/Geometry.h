@@ -30,6 +30,7 @@ namespace xgp {
     public:
         Geometry();
 
+        const std::string& name() const;
         const std::vector<Vertex>& vertices() const;
         const std::vector<GLuint>& indices()  const;
         const GLuint VAO() const;
@@ -41,6 +42,7 @@ namespace xgp {
         void upload();
 
     private:
+        std::string _name;
         GLuint _vao;
         std::vector<GLuint> _indices;
         std::vector<Vertex> _vertices;

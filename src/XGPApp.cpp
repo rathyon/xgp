@@ -7,6 +7,10 @@
 #include "Texture.h"
 #include "BlinnPhongMaterial.h"
 #include "Perspective.h"
+#include "DirectionalLight.h"
+#include "PointLight.h"
+#include "SpotLight.h"
+#include "Resources.h"
 #include <Utils.h>
 
 using namespace xgp;
@@ -77,42 +81,61 @@ void XGPApp::init() {
 	prepare();
 }
 
-//temporary vars for testing
-Model* _model;
-std::shared_ptr<BlinnPhongMaterial> _mat;
-Perspective* _camera;
-GLuint _cameraBuffer;
-
-
 void XGPApp::prepare() {
+	Resource.initialize();
+
 	// Temporary test setup
 	ShaderSource vert = ShaderSource(GL_VERTEX_SHADER, "../../src/Shaders/flat.vs");
 	ShaderSource frag = ShaderSource(GL_FRAGMENT_SHADER, "../../src/Shaders/flat.fs");
-	Shader _shader = Shader("test");
-	_shader.addShader(vert);
-	_shader.addShader(frag);
-	_shader.link();
+	Shader shader = Shader("test");
+	shader.addShader(vert);
+	shader.addShader(frag);
+	shader.link();
 
-	_model = new Model("../../assets/models/cube.obj");
-	_model->prepare();
-	_model->updateMatrix();
+	Image _diffuseImg = Image();
+	_diffuseImg.loadImage("../../assets/images/Metal_tiles_002_SD/Metal_Tiles_002_basecolor.jpg", IMG_2D);
+	Texture _diffuseMap = Texture(_diffuseImg);
 
-	_mat = std::make_shared<BlinnPhongMaterial>();
-	_mat->setProgram(_shader.id());
+	Image _normalImg = Image();
+	_normalImg.loadImage("../../assets/images/Metal_tiles_002_SD/Metal_Tiles_002_normal.jpg", IMG_2D);
+	Texture _normalMap = Texture(_normalImg);
 
-	_model->setMaterial(_mat);
+	std::shared_ptr<BlinnPhongMaterial> mat;
+	mat = std::make_shared<BlinnPhongMaterial>();
+	mat->setProgram(shader.id());
 
-	Image _texImg = Image();
-	_texImg.loadImage("../../assets/models/diffuse.png", IMG_2D);
-	Texture _tex = Texture(_texImg);
+	mat->setDiffuseTex(_diffuseMap.id());
+	mat->setNormalMap(_normalMap.id());
+	mat->setSpecular(glm::vec3(1.0f));
+	mat->setShininess(64.f);
 
-	_camera = new Perspective(_width, _height, glm::vec3(3.f, 3.f, 3.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.1f, 1000.f, 90.f);
+	std::shared_ptr<Model> model = std::make_shared<Model>("../../assets/models/cube.obj");
+	model->prepare();
+	model->updateMatrix();
+	model->setMaterial(mat);
+
+	_mainCamera = new Perspective(_width, _height, glm::vec3(3.f, 3.f, 3.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.1f, 1000.f, 90.f);
+
+	_mainLight = std::make_shared<DirectionalLight>(glm::vec3(1), glm::vec3(0.0f, -1.0f, -1.0f));
+
+	_scene.addShape(model);
+	_scene.addLight(_mainLight);
 
 	// Buffers to the GPU
-	glGenBuffers(1, &_cameraBuffer);
-	glBindBuffer(GL_UNIFORM_BUFFER, _cameraBuffer);
+	glGenBuffers(1, &_mainCameraBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, _mainCameraBuffer);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraData), 0, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 0, _cameraBuffer);
+	// Set block binding for all shaders -> OpenGL 4.2 and onwards allows this to be done in the shader!
+	glUniformBlockBinding(mat->program(), glGetUniformBlockIndex(mat->program(), "cameraBlock"), CAMERA_BUFFER_IDX);
+	glBindBufferBase(GL_UNIFORM_BUFFER, CAMERA_BUFFER_IDX, _mainCameraBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	glGenBuffers(1, &_mainLightBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, _mainLightBuffer);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightData), 0, GL_DYNAMIC_DRAW);
+	// Set block binding for all shaders -> OpenGL 4.2 and onwards allows this to be done in the shader!
+	glUniformBlockBinding(mat->program(), glGetUniformBlockIndex(mat->program(), "lightBlock"), LIGHTS_BUFFER_IDX);
+	glBindBufferBase(GL_UNIFORM_BUFFER, LIGHTS_BUFFER_IDX, _mainLightBuffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 }
@@ -142,18 +165,12 @@ void XGPApp::update(double dt) {
 void XGPApp::render() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Upload camera
-	CameraData data;
-	data.viewMatrix = _camera->viewMatrix();
-	data.projMatrix = _camera->projMatrix();
-	data.viewProjMatrix = _camera->viewProjMatrix();
-	data.viewPos = _camera->position();
+	uploadCameraData();
+	uploadLightData();
 
-	glBindBuffer(GL_UNIFORM_BUFFER, _cameraBuffer);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraData), &data, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-	_model->draw();
+	for (std::shared_ptr<Shape> shape : _scene.shapes()) {
+		shape->draw();
+	}
 }
 
 void XGPApp::setTitle(const std::string& title) {
@@ -176,7 +193,7 @@ void XGPApp::errorCallback(int error, const char* description) {
 void XGPApp::reshapeCallback(int width, int height) {
 	_width = width;
 	_height = height;
-	_camera->updateProjMatrix(width, height);
+	_mainCamera->updateProjMatrix(width, height);
 	glViewport(0, 0, width, height);
 }
 
@@ -191,4 +208,25 @@ void XGPApp::mouseButtonCallback(int button, int action, int mods) {
 
 void XGPApp::mousePosCallback(double xpos, double ypos) {
 
+}
+
+void XGPApp::uploadCameraData() {
+	CameraData data;
+	data.viewMatrix = _mainCamera->viewMatrix();
+	data.projMatrix = _mainCamera->projMatrix();
+	data.viewProjMatrix = _mainCamera->viewProjMatrix();
+	data.viewPos = _mainCamera->position();
+
+	glBindBuffer(GL_UNIFORM_BUFFER, _mainCameraBuffer);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraData), &data, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void XGPApp::uploadLightData() {
+	LightData data;
+	_mainLight->toData(data);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, _mainLightBuffer);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightData), &data, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include <Resources.h>
 #include <Utils.h>
 
 using namespace xgp;
@@ -14,9 +15,7 @@ Model::Model(const std::string& objPath) {
         std::cerr << "ERROR: Failed to load OBJ file: " << objPath << std::endl;
     }
 
-    //TODO: load material from file (if possible)
-
-    //TODO: Register geometry in the resource manager
+    Resource.addGeometry(_geometry->name(), _geometry);
 }
 
 Model::Model(const std::string& objPath, const glm::vec3& position)
@@ -28,9 +27,7 @@ Model::Model(const std::string& objPath, const glm::vec3& position)
         std::cerr << "ERROR: Failed to load OBJ file: " << objPath << std::endl;
     }
 
-    //TODO: load material from file (if possible)
-
-    //TODO: Register geometry in the resource manager
+    Resource.addGeometry(_geometry->name(), _geometry);
 }
 
 Model::Model(const std::string& objPath, const glm::mat4& objToWorld)
@@ -42,9 +39,7 @@ Model::Model(const std::string& objPath, const glm::mat4& objToWorld)
         std::cerr << "ERROR: Failed to load OBJ file: " << objPath << std::endl;
     }
 
-    //TODO: load material from file (if possible)
-
-    //TODO: Register geometry in the resource manager
+    Resource.addGeometry(_geometry->name(), _geometry);
 }
 
 void Model::prepare() {

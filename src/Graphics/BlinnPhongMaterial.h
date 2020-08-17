@@ -20,6 +20,7 @@ namespace xgp {
 		void setSpecularTex(GLuint specTex);
 
 		void setNormalMap(GLuint normalMap);
+		void setHeightMap(GLuint heightMap);
 
 		void setShininess(float shininess);
 
@@ -31,6 +32,7 @@ namespace xgp {
 		GLuint diffuseTex() const;
 		GLuint specularTex() const;
 		GLuint normalMap() const;
+		GLuint heightMap() const;
 
     private:
         glm::vec3 _ambient;
@@ -41,6 +43,7 @@ namespace xgp {
         GLuint _diffuseTex;
         GLuint _specularTex;
         GLuint _normalMap;
+		GLuint _heightMap;
     };
 
 }

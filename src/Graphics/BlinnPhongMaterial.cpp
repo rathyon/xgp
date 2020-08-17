@@ -14,6 +14,7 @@ BlinnPhongMaterial::BlinnPhongMaterial() {
     _diffuseTex = -1;
     _specularTex = -1;
     _normalMap = -1;
+    _heightMap = -1;
 }
 
 void BlinnPhongMaterial::uploadData() {
@@ -42,6 +43,12 @@ void BlinnPhongMaterial::uploadData() {
         glBindTexture(GL_TEXTURE_2D, _normalMap);
         setSampler("normalMap", TextureUnit::NORMAL_MAP);
     }
+
+    if (_heightMap != -1) {
+        glActiveTexture(GL_TEXTURE0 + TextureUnit::HEIGHT_MAP);
+        glBindTexture(GL_TEXTURE_2D, _heightMap);
+        setSampler("heightMap", TextureUnit::HEIGHT_MAP);
+    }
 }
 
 void BlinnPhongMaterial::setAmbient(const glm::vec3& ambient) {
@@ -64,8 +71,12 @@ void BlinnPhongMaterial::setSpecularTex(GLuint specTex) {
     _specularTex = specTex;
 }
 
-void BlinnPhongMaterial::setNormalMap(GLuint normTex) {
-    _normalMap = normTex;
+void BlinnPhongMaterial::setNormalMap(GLuint normMap) {
+    _normalMap = normMap;
+}
+
+void BlinnPhongMaterial::setHeightMap(GLuint heightMap) {
+    _heightMap = heightMap;
 }
 
 void BlinnPhongMaterial::setShininess(float shininess) {
@@ -94,4 +105,8 @@ GLuint BlinnPhongMaterial::specularTex() const {
 }
 GLuint BlinnPhongMaterial::normalMap() const {
     return _normalMap;
+}
+
+GLuint BlinnPhongMaterial::heightMap() const {
+    return _heightMap;
 }
