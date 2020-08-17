@@ -32,7 +32,7 @@ int Camera::height() const {
 }
 
 float Camera::aspect() const {
-	return (float)_width / (float)_far;
+	return (float)_width / (float)_height;
 }
 
 float Camera::near() const {
@@ -95,4 +95,9 @@ void Camera::updateViewMatrix() {
 	glm::mat4 orientation = rotX * rotY;
 
 	_objToWorld = orientation * glm::translate(glm::mat4(1),  -_position);
+}
+
+void Camera::updateProjMatrix(int width, int height) {
+	_width = width;
+	_height = height;
 }

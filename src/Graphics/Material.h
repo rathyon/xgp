@@ -23,6 +23,9 @@ namespace xgp {
         void use() const;
         GLuint program() const;
 
+        //TODO: delet this when loading shader from resource manager
+        void setProgram(GLuint prog);
+
         virtual void uploadData() = 0;
 
         void setInt(const std::string& name, int value);

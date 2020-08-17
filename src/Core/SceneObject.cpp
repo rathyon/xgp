@@ -3,10 +3,10 @@
 using namespace xgp;
 
 SceneObject::SceneObject()
-	: _position(glm::vec3(0)), _scale(glm::vec3(1)), _rotation(glm::quat(glm::vec3(0))), _parent(nullptr) { }
+	: _position(glm::vec3(0)), _scale(glm::vec3(1)), _rotation(glm::quat()), _parent(nullptr) { }
 
 SceneObject::SceneObject(const glm::vec3& position)
-	: _position(position), _scale(glm::vec3(1)), _rotation(glm::quat(glm::vec3(0))), _parent(nullptr) { }
+	: _position(position), _scale(glm::vec3(1)), _rotation(glm::quat()), _parent(nullptr) { }
 
 SceneObject::SceneObject(const glm::mat4& objToWorld)
 	: _objToWorld(objToWorld), _parent(nullptr){

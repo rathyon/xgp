@@ -11,6 +11,7 @@ namespace xgp {
 			const glm::vec3& at, const glm::vec3& up, float near, float far, float fov);
 
 		float fov() const;
+		void updateProjMatrix(int width, int height) override;
 
 	private:
 		float _fov;

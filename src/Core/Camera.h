@@ -36,6 +36,7 @@ namespace xgp {
 		void updateOrientation(float dp, float dy);
 
 		void updateViewMatrix();
+		virtual void updateProjMatrix(int width, int height);
 
 	protected:
 		int _width;

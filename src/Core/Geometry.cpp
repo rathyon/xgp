@@ -1,10 +1,10 @@
 #include "Geometry.h"
 
-#include <iostream>
-#include <unordered_map>
-
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
+
+#include <iostream>
+#include <unordered_map>
 
 using namespace xgp;
 
@@ -68,6 +68,18 @@ bool Geometry::loadObj(const std::string& filePath) {
                 //1.0f - attrib.texcoords[2 * index.texcoord_index + 1] in case it needs to be flipped
             };
 
+            /** /
+            _indices.push_back(_vertices.size());
+
+            Vertex vertex{};
+            vertex.pos = objVertex.pos;
+            vertex.normal = objVertex.normal;
+            vertex.texCoord = objVertex.texCoord;
+            vertex.tangent = glm::vec3(0);
+            _vertices.push_back(vertex);
+            /**/
+
+            /**/
             if (uniqueVertices.count(objVertex) == 0) {
                 uniqueVertices[objVertex] = static_cast<GLuint>(_vertices.size());
 
@@ -82,6 +94,7 @@ bool Geometry::loadObj(const std::string& filePath) {
             }
 
             _indices.push_back(uniqueVertices[objVertex]);
+            /**/
         }
     }
 
@@ -154,7 +167,9 @@ void Geometry::upload() {
     // index buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOs[1]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * _indices.size(), &_indices[0], GL_STATIC_DRAW);
+
+    // They MUST be placed in this order. Why? I couldn't figure out, seems to be an issue though
+    glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    glBindVertexArray(0);
 }

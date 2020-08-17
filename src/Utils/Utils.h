@@ -1,6 +1,9 @@
 #ifndef __XGP_UTILS_H__
 #define __XGP_UTILS_H__
 
+#include <GL/glew.h>
+#include <string>
+
 namespace xgp {
 	namespace Utils {
 		const char* getGLErrorString(GLenum err);

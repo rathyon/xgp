@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <Utils.h>
+
 using namespace xgp;
 
 Model::Model(const std::string& objPath) {
@@ -56,15 +58,15 @@ void Model::draw() {
 
     glUseProgram(_material->program());
 
-    glUniform4fv(glGetUniformLocation(_material->program(), "ModelMatrix"), 1, glm::value_ptr(objToWorld()));
-    glUniform3fv(glGetUniformLocation(_material->program(), "NormalMatrix"), 1, glm::value_ptr(normalMatrix()));
+    glUniformMatrix4fv(glGetUniformLocation(_material->program(), "ModelMatrix"), 1, GL_FALSE, glm::value_ptr(objToWorld()));
+    glUniformMatrix3fv(glGetUniformLocation(_material->program(), "NormalMatrix"), 1, GL_FALSE, glm::value_ptr(normalMatrix()));
 
     if (_material)
         _material->uploadData();
 
     glBindVertexArray(_geometry->VAO());
     //glDrawArrays(GL_TRIANGLES, 0, _geometry->vertices().size());
-    glDrawElements(GL_TRIANGLES, _geometry->indices().size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, _geometry->indices().size(), GL_UNSIGNED_INT, 0); // has a specific "problem", check Geometry class for details
     glBindVertexArray(0);
 
     glUseProgram(0);

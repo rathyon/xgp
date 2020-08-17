@@ -10,6 +10,10 @@ GLuint Material::program() const {
     return _program;
 }
 
+void Material::setProgram(GLuint prog) {
+	_program = prog;
+}
+
 void Material::setInt(const std::string& name, int value) {
 	glUniform1i(glGetUniformLocation(_program, name.c_str()), value);
 }

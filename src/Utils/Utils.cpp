@@ -1,6 +1,5 @@
 #include "Utils.h"
 
-#include <GL/glew.h>
 #include <iostream>
 
 using namespace xgp;
