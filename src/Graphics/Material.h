@@ -2,7 +2,7 @@
 #define __XGP_MATERIAL_H__
 
 #include <GL/glew.h>
-// temporary replacement for future Color class
+// temporary replacement for future Color/Spectrum class
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -24,7 +24,6 @@ namespace xgp {
         void use() const;
         GLuint program() const;
 
-        //TODO: delet this when loading shader from resource manager
         void setProgram(GLuint prog);
 
         virtual void uploadData() = 0;

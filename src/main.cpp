@@ -4,8 +4,6 @@ using namespace xgp;
 
 /*
 	TODO:
-	Integrate ResourceManager into other classes
-	Material loading (optional)
 */
 
 /*

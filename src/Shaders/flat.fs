@@ -1,5 +1,7 @@
 #version 430
 
+#define LIGHT_COUNT 1
+
 // Everything in world coordinates
 in FragData {
     vec3 position;
@@ -30,7 +32,7 @@ uniform cameraBlock {
 };
 
 layout (std140) uniform lightBlock {
-	Light light;
+	Light light[LIGHT_COUNT];
 };
 
 // Material parameters
@@ -63,8 +65,8 @@ void main() {
 	vec3 testSpec = vec3(1.0);
 
 	if (NdotL > 0.0){
-		diff = light.emission * ( testDiff * NdotL);
-		spec = light.emission * ( testSpec * pow(NdotH, 64));
+		diff = light[0].emission * ( testDiff * NdotL);
+		spec = light[0].emission * ( testSpec * pow(NdotH, 64));
 	}
 
 	//outColor = vec4(texture(normalMap, vsIn.texCoords), 1.0);

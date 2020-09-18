@@ -2,6 +2,7 @@
 #define __XGP_BLINNPHONGMATERIAL_H__
 
 #include "Material.h"
+#include "Texture.h"
 
 namespace xgp {
 

@@ -17,6 +17,10 @@
 
 using namespace xgp;
 
+const std::string SHADERS_DIR = "../../src/Shaders/";
+const std::string MODELS_DIR = "../../assets/models/";
+const std::string IMAGES_DIR = "../../assets/images/";
+
 XGPApp::XGPApp(const std::string title, int width, int height)
 	: _title(title), _width(width) , _height(height), _window(nullptr) {
 }
@@ -83,63 +87,80 @@ void XGPApp::init() {
 	prepare();
 }
 
-void XGPApp::prepare() {
-	Resource.initialize();
+void XGPApp::loadShaders() {
+	ShaderSource vert = ShaderSource(GL_VERTEX_SHADER, SHADERS_DIR + "flat.vs");
+	ShaderSource frag = ShaderSource(GL_FRAGMENT_SHADER, SHADERS_DIR + "flat.fs");
+	std::shared_ptr<Shader> shader = std::make_shared<Shader>("test");
+	shader->addShader(vert);
+	shader->addShader(frag);
+	shader->link();
+	Resource.addShader("test", shader);
+	_shaders.push_back(shader);
+}
 
-	// Temporary test setup
-	ShaderSource vert = ShaderSource(GL_VERTEX_SHADER, "../../src/Shaders/flat.vs");
-	ShaderSource frag = ShaderSource(GL_FRAGMENT_SHADER, "../../src/Shaders/flat.fs");
-	Shader shader = Shader("test");
-	shader.addShader(vert);
-	shader.addShader(frag);
-	shader.link();
-
+void XGPApp::loadImages() {
 	Image _diffuseImg = Image();
-	_diffuseImg.loadImage("../../assets/images/Metal_tiles_002_SD/Metal_Tiles_002_basecolor.jpg", IMG_2D);
-	Texture _diffuseMap = Texture(_diffuseImg);
+	_diffuseImg.loadImage(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_basecolor.jpg", IMG_2D);
+	std::shared_ptr<Texture> _diffuseMap = std::make_shared<Texture>(_diffuseImg);
+	Resource.addTexture("diffuseMap", _diffuseMap);
 
 	Image _normalImg = Image();
-	_normalImg.loadImage("../../assets/images/Metal_tiles_002_SD/Metal_Tiles_002_normal.jpg", IMG_2D);
-	Texture _normalMap = Texture(_normalImg);
+	_normalImg.loadImage(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_normal.jpg", IMG_2D);
+	std::shared_ptr<Texture> _normalMap = std::make_shared<Texture>(_normalImg);
+	Resource.addTexture("normalMap", _normalMap);
+}
 
+void XGPApp::loadModels() {
 	std::shared_ptr<BlinnPhongMaterial> mat;
 	mat = std::make_shared<BlinnPhongMaterial>();
-	mat->setProgram(shader.id());
-
-	mat->setDiffuseTex(_diffuseMap.id());
-	mat->setNormalMap(_normalMap.id());
+	mat->setProgram(Resource.getShader("test")->id());
+	mat->setDiffuseTex(Resource.getTexture("diffuseMap")->id());
+	mat->setNormalMap(Resource.getTexture("normalMap")->id());
 	mat->setSpecular(glm::vec3(1.0f));
 	mat->setShininess(64.f);
 
-	std::shared_ptr<Model> model = std::make_shared<Model>("../../assets/models/cube.obj");
+	std::shared_ptr<Model> model = std::make_shared<Model>(MODELS_DIR + "cube.obj");
 	model->prepare();
 	model->updateMatrix();
 	model->setMaterial(mat);
-
-	_mainCamera = new Perspective(_width, _height, glm::vec3(3.f, 3.f, 3.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.1f, 1000.f, 90.f);
-
-	_mainLight = std::make_shared<DirectionalLight>(glm::vec3(1), glm::vec3(0.0f, -1.0f, -1.0f));
-
+	Resource.addShape("model", model);
 	_scene.addShape(model);
-	_scene.addLight(_mainLight);
+}
+
+
+void XGPApp::prepare() {
+	Resource.initialize();
+
+	// Camera
+	_camera = new Perspective(_width, _height, glm::vec3(3.f, 3.f, 3.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.1f, 1000.f, 90.f);
+
+	// Lights
+	std::shared_ptr<DirectionalLight> light1 = std::make_shared<DirectionalLight>(glm::vec3(1), glm::vec3(0.0f, -1.0f, -1.0f));
+	_scene.addLight(light1);
+
+	loadShaders();
+	loadImages();
+	loadModels();
 
 	// Buffers to the GPU
-	glGenBuffers(1, &_mainCameraBuffer);
-	glBindBuffer(GL_UNIFORM_BUFFER, _mainCameraBuffer);
+	glGenBuffers(1, &_cameraBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, _cameraBuffer);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraData), 0, GL_DYNAMIC_DRAW);
 	// Set block binding for all shaders -> OpenGL 4.2 and onwards allows this to be done in the shader!
-	glUniformBlockBinding(mat->program(), glGetUniformBlockIndex(mat->program(), "cameraBlock"), CAMERA_BUFFER_IDX);
-	glBindBufferBase(GL_UNIFORM_BUFFER, CAMERA_BUFFER_IDX, _mainCameraBuffer);
+	for(std::shared_ptr<Shader> shader : _shaders) {
+		glUniformBlockBinding(shader->id(), glGetUniformBlockIndex(shader->id(), "cameraBlock"), CAMERA_BUFFER_IDX);
+	}
+	glBindBufferBase(GL_UNIFORM_BUFFER, CAMERA_BUFFER_IDX, _cameraBuffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	glGenBuffers(1, &_mainLightBuffer);
-	glBindBuffer(GL_UNIFORM_BUFFER, _mainLightBuffer);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightData), 0, GL_DYNAMIC_DRAW);
-	// Set block binding for all shaders -> OpenGL 4.2 and onwards allows this to be done in the shader!
-	glUniformBlockBinding(mat->program(), glGetUniformBlockIndex(mat->program(), "lightBlock"), LIGHTS_BUFFER_IDX);
-	glBindBufferBase(GL_UNIFORM_BUFFER, LIGHTS_BUFFER_IDX, _mainLightBuffer);
+	glGenBuffers(1, &_lightsBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, _lightsBuffer);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightData) * _scene.lights().size(), 0, GL_DYNAMIC_DRAW);
+	for (std::shared_ptr<Shader> shader : _shaders) {
+		glUniformBlockBinding(shader->id(), glGetUniformBlockIndex(shader->id(), "lightBlock"), LIGHTS_BUFFER_IDX);
+	}
+	glBindBufferBase(GL_UNIFORM_BUFFER, LIGHTS_BUFFER_IDX, _lightsBuffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
 }
 
 void XGPApp::loop() {
@@ -164,8 +185,8 @@ void XGPApp::update(double dt) {
 	// Camera look
 	const float CAMERA_LOOK_SPEED = 0.7f;
 	if (_mouseBtn[GLFW_MOUSE_BUTTON_LEFT]) {
-		_mainCamera->updateOrientation(-_mouseDy * dt * CAMERA_LOOK_SPEED, -_mouseDx * dt * CAMERA_LOOK_SPEED);
-		_mainCamera->updateViewMatrix();
+		_camera->updateOrientation(-_mouseDy * dt * CAMERA_LOOK_SPEED, -_mouseDx * dt * CAMERA_LOOK_SPEED);
+		_camera->updateViewMatrix();
 	}
 
 	_mouseDx = 0; _mouseDy = 0;
@@ -173,22 +194,22 @@ void XGPApp::update(double dt) {
 	// Camera movement
 	glm::vec3 moveDir = glm::vec3(0);
 	if (_keys[GLFW_KEY_W]) {
-		moveDir += -_mainCamera->front();
+		moveDir += -_camera->front();
 	}
 	else if (_keys[GLFW_KEY_S]) {
-		moveDir += _mainCamera->front();
+		moveDir += _camera->front();
 	}
 	if (_keys[GLFW_KEY_D]) {
-		moveDir += _mainCamera->right();
+		moveDir += _camera->right();
 	}
 	else if (_keys[GLFW_KEY_A]) {
-		moveDir += -_mainCamera->right();
+		moveDir += -_camera->right();
 	}
 
 	const float CAMERA_MOVEMENT_SPEED = 7.0f;
 	if (moveDir != glm::vec3(0)) {
-		_mainCamera->setPosition(_mainCamera->position() + glm::normalize(moveDir) * (float)dt * CAMERA_MOVEMENT_SPEED);
-		_mainCamera->updateViewMatrix();
+		_camera->setPosition(_camera->position() + glm::normalize(moveDir) * (float)dt * CAMERA_MOVEMENT_SPEED);
+		_camera->updateViewMatrix();
 	}
 }
 
@@ -223,7 +244,7 @@ void XGPApp::errorCallback(int error, const char* description) {
 void XGPApp::reshapeCallback(int width, int height) {
 	_width = width;
 	_height = height;
-	_mainCamera->updateProjMatrix(width, height);
+	_camera->updateProjMatrix(width, height);
 	glViewport(0, 0, width, height);
 }
 
@@ -257,21 +278,22 @@ void XGPApp::mousePosCallback(double xpos, double ypos) {
 
 void XGPApp::uploadCameraData() {
 	CameraData data;
-	data.viewMatrix = _mainCamera->viewMatrix();
-	data.projMatrix = _mainCamera->projMatrix();
-	data.viewProjMatrix = _mainCamera->viewProjMatrix();
-	data.viewPos = _mainCamera->position();
+	data.viewMatrix = _camera->viewMatrix();
+	data.projMatrix = _camera->projMatrix();
+	data.viewProjMatrix = _camera->viewProjMatrix();
+	data.viewPos = _camera->position();
 
-	glBindBuffer(GL_UNIFORM_BUFFER, _mainCameraBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, _cameraBuffer);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraData), &data, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void XGPApp::uploadLightData() {
-	LightData data;
-	_mainLight->toData(data);
-
-	glBindBuffer(GL_UNIFORM_BUFFER, _mainLightBuffer);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightData), &data, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, _lightsBuffer);
+	for (int i = 0; i < _scene.lights().size(); i++) {
+		LightData data;
+		_scene.lights()[i]->toData(data);
+		glBufferSubData(GL_UNIFORM_BUFFER, i * sizeof(LightData), sizeof(LightData), &data);
+	}
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

@@ -5,9 +5,11 @@
 #include <GLFW/glfw3.h>
 
 #include <string>
+#include <vector>
 
 #include <Camera.h>
 #include <Scene.h>
+#include <Shader.h>
 
 namespace xgp {
 
@@ -37,6 +39,10 @@ namespace xgp {
 
 	private:
 		void prepare();
+		void loadShaders();
+		void loadImages();
+		void loadModels();
+
 		void uploadCameraData();
 		void uploadLightData();
 
@@ -49,14 +55,11 @@ namespace xgp {
 		int _mouseX, _mouseY;
 		float _mouseDx, _mouseDy;
 
-		Camera* _mainCamera;
-		GLuint _mainCameraBuffer;
-
-		// Temporary, just for testing
-		std::shared_ptr<Light> _mainLight;
-		GLuint _mainLightBuffer;
-
+		Camera* _camera;
+		GLuint _cameraBuffer;
 		Scene _scene;
+		GLuint _lightsBuffer;
+		std::vector<std::shared_ptr<Shader>> _shaders;
 	};
 }
 

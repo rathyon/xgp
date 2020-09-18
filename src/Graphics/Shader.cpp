@@ -49,6 +49,10 @@ const std::string& ShaderSource::source() const {
     return _source;
 }
 
+void ShaderSource::inject(const std::string& code) {
+    _source.insert(0, code);
+}
+
 bool ShaderSource::compile() {
     if (_id != 0) {
         std::cerr << "ERROR: Shader has already been compiled: " << _name << std::endl;

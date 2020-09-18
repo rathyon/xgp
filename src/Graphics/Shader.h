@@ -18,6 +18,8 @@ namespace xgp {
 		const std::string& name() const;
 		const std::string& source() const;
 
+		void inject(const std::string& code);
+
 		bool compile();
 
 	private:

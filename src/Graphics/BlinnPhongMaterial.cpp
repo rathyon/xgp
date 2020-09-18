@@ -1,11 +1,10 @@
 #include "BlinnPhongMaterial.h"
 
+#include <Resources.h>
+
 using namespace xgp;
 
 BlinnPhongMaterial::BlinnPhongMaterial() {
-    // TODO: fetch shader from resource manager
-    //_prog = Resource.getShader("blinnPhong")->id();
-
     _ambient = glm::vec3(0.0f);
     _diffuse = glm::vec3(-1.0f);
     _specular = glm::vec3(-1.0f);

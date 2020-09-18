@@ -1,5 +1,7 @@
 #version 430
 
+#define LIGHT_COUNT 1
+
 layout(location = 0) in vec3 Position;	
 layout(location = 1) in vec3 Normal;
 layout(location = 2) in vec2 TexCoords;
@@ -27,7 +29,7 @@ uniform cameraBlock {
 };
 
 layout (std140) uniform lightBlock {
-    Light light;
+    Light light[LIGHT_COUNT];
 };
 
 // Passes everything in world coordinates to the fragment shader
@@ -56,8 +58,8 @@ void main() {
 
     vsOut.positionTS = TBN * vec3(ModelMatrix * vec4(Position, 1.0));
     vsOut.viewPosTS = TBN * ViewPos;
-    vsOut.lightPosTS = TBN * light.position;
-    vsOut.lightDirTS = TBN * light.direction;
+    vsOut.lightPosTS = TBN * light[0].position;
+    vsOut.lightDirTS = TBN * light[0].direction;
 
     // Return position in MVP coordinates
     gl_Position = ViewProjMatrix * vec4(vsOut.position, 1.0);
