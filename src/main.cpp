@@ -2,19 +2,15 @@
 
 using namespace xgp;
 
-
 /*
 	TODO:
-
-	Light class
-		DirectionalLight
-		Pointlight
-		Spotlight
-	Viewport camera movement with keys and mouse movement
 	Integrate ResourceManager into other classes
 	Material loading (optional)
-	Add Support for multiple lights (inject text into shader)
+*/
 
+/*
+	OPTIONAL:
+	Add Support for multiple lights (inject text into shader)
 */
 
 

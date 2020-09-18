@@ -20,7 +20,7 @@ Camera::Camera(int width, int height, const glm::vec3& eye,
 
 	glm::vec3 viewDirection = glm::normalize(at - eye);
 	_pitch = asinf(-viewDirection.y);
-	_yaw = atan2f(viewDirection.x, viewDirection.z);
+	_yaw = atan2f(viewDirection.x, -viewDirection.z);
 }
 
 int Camera::width() const {

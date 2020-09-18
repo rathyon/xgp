@@ -44,6 +44,10 @@ namespace xgp {
 		int _width, _height;
 		std::string _title;
 		double _oldTime;
+		bool _keys[256];
+		bool _mouseBtn[8];
+		int _mouseX, _mouseY;
+		float _mouseDx, _mouseDy;
 
 		Camera* _mainCamera;
 		GLuint _mainCameraBuffer;

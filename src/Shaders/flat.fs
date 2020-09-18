@@ -47,6 +47,7 @@ uniform float shininess;
 out vec4 outColor;
 
 void main() {
+	/**/
 	vec3 V = normalize(vsIn.viewPosTS - vsIn.positionTS);
 	vec3 N = normalize(texture(normalMap, vsIn.texCoords).rgb * 2.0 - 1.0);
 	vec3 L = normalize(-vsIn.lightDirTS);
@@ -68,4 +69,5 @@ void main() {
 
 	//outColor = vec4(texture(normalMap, vsIn.texCoords), 1.0);
 	outColor = vec4(diff + spec, 1.0);
+	/**/
 }

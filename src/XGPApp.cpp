@@ -13,6 +13,8 @@
 #include "Resources.h"
 #include <Utils.h>
 
+#include <glm/gtx/string_cast.hpp>
+
 using namespace xgp;
 
 XGPApp::XGPApp(const std::string title, int width, int height)
@@ -159,7 +161,35 @@ void XGPApp::loop() {
 }
 
 void XGPApp::update(double dt) {
+	// Camera look
+	const float CAMERA_LOOK_SPEED = 0.7f;
+	if (_mouseBtn[GLFW_MOUSE_BUTTON_LEFT]) {
+		_mainCamera->updateOrientation(-_mouseDy * dt * CAMERA_LOOK_SPEED, -_mouseDx * dt * CAMERA_LOOK_SPEED);
+		_mainCamera->updateViewMatrix();
+	}
 
+	_mouseDx = 0; _mouseDy = 0;
+
+	// Camera movement
+	glm::vec3 moveDir = glm::vec3(0);
+	if (_keys[GLFW_KEY_W]) {
+		moveDir += -_mainCamera->front();
+	}
+	else if (_keys[GLFW_KEY_S]) {
+		moveDir += _mainCamera->front();
+	}
+	if (_keys[GLFW_KEY_D]) {
+		moveDir += _mainCamera->right();
+	}
+	else if (_keys[GLFW_KEY_A]) {
+		moveDir += -_mainCamera->right();
+	}
+
+	const float CAMERA_MOVEMENT_SPEED = 7.0f;
+	if (moveDir != glm::vec3(0)) {
+		_mainCamera->setPosition(_mainCamera->position() + glm::normalize(moveDir) * (float)dt * CAMERA_MOVEMENT_SPEED);
+		_mainCamera->updateViewMatrix();
+	}
 }
 
 void XGPApp::render() {
@@ -200,14 +230,29 @@ void XGPApp::reshapeCallback(int width, int height) {
 void XGPApp::keyCallback(int key, int scancode, int action, int mods) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(_window, GLFW_TRUE);
+
+	if (action == GLFW_PRESS)
+		_keys[key] = true;
+	else if (action == GLFW_RELEASE)
+		_keys[key] = false;
 }
 
 void XGPApp::mouseButtonCallback(int button, int action, int mods) {
-
+	if (action == GLFW_PRESS)
+		_mouseBtn[button] = true;
+	else if (action == GLFW_RELEASE)
+		_mouseBtn[button] = false;
 }
 
 void XGPApp::mousePosCallback(double xpos, double ypos) {
+	int dx = xpos - _mouseX;
+	int dy = _mouseY - ypos;
 
+	_mouseX = xpos;
+	_mouseY = ypos;
+
+	_mouseDx = dx;
+	_mouseDy = dy;
 }
 
 void XGPApp::uploadCameraData() {
