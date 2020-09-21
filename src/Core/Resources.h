@@ -13,7 +13,7 @@ namespace xgp {
     class Shape;
     class Geometry;
     class Shader;
-    class Texture;
+    class Image;
 
     class Resources {
     public:
@@ -23,20 +23,20 @@ namespace xgp {
 
         void initialize();
 
-        void addGeometry(const std::string& name, const std::shared_ptr<Geometry>& geometry);
-        void addShape   (const std::string& name, const std::shared_ptr<Shape>& shape);
-        void addShader  (const std::string& name, const std::shared_ptr<Shader>& shader);
-        void addTexture (const std::string& name, const std::shared_ptr<Texture>& texture);
+        void addGeometry (const std::string& name, const std::shared_ptr<Geometry>& geometry);
+        void addShape    (const std::string& name, const std::shared_ptr<Shape>& shape);
+        void addShader   (const std::string& name, const std::shared_ptr<Shader>& shader);
+        void addImage    (const std::string& name, const std::shared_ptr<Image>& image);
 
-        bool deleteGeometry(const std::string& name);
-        bool deleteShape   (const std::string& name);
-        bool deleteShader  (const std::string& name);
-        bool deleteTexture (const std::string& name);
+        bool deleteGeometry (const std::string& name);
+        bool deleteShape    (const std::string& name);
+        bool deleteShader   (const std::string& name);
+        bool deleteImage    (const std::string& name);
 
-        Geometry* getGeometry(const std::string& name);
-        Shape*    getShape   (const std::string& name);
-        Shader*   getShader  (const std::string& name);
-        Texture*  getTexture (const std::string& name);
+        Geometry* getGeometry (const std::string& name);
+        Shape*    getShape    (const std::string& name);
+        Shader*   getShader   (const std::string& name);
+        Image*    getImage    (const std::string& name);
 
         void cleanup();
 
@@ -50,7 +50,7 @@ namespace xgp {
         std::unordered_map<std::string, std::shared_ptr<Geometry>> _geometry;
         std::unordered_map<std::string, std::shared_ptr<Shape>>    _shapes;
         std::unordered_map<std::string, std::shared_ptr<Shader>>   _shaders;
-        std::unordered_map<std::string, std::shared_ptr<Texture>>  _textures;
+        std::unordered_map<std::string, std::shared_ptr<Image>>    _images;
     };
 
 }

@@ -72,9 +72,6 @@
     <ClInclude Include="..\..\src\Graphics\Image.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\Texture.h">
-      <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Utils\Utils.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
@@ -132,9 +129,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Graphics\Image.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\Texture.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Utils\Utils.cpp">

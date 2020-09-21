@@ -4,7 +4,7 @@
 
 #include "Shader.h"
 #include "Model.h"
-#include "Texture.h"
+#include "Image.h"
 #include "BlinnPhongMaterial.h"
 #include "Perspective.h"
 #include "DirectionalLight.h"
@@ -65,15 +65,14 @@ void XGPApp::init() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
+	glDepthRange(0.0, 1.0);
+	glClearDepth(1.0);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glDepthRange(0.0, 1.0);
-	//glClearDepth(1.0);
-	//glDisable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-	//glFrontFace(GL_CCW);
+
 	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	//glEnable(GL_MULTISAMPLE);
 
@@ -99,23 +98,21 @@ void XGPApp::loadShaders() {
 }
 
 void XGPApp::loadImages() {
-	Image _diffuseImg = Image();
-	_diffuseImg.loadImage(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_basecolor.jpg", IMG_2D);
-	std::shared_ptr<Texture> _diffuseMap = std::make_shared<Texture>(_diffuseImg);
-	Resource.addTexture("diffuseMap", _diffuseMap);
+	std::shared_ptr<Image> _diffuseMap = std::make_shared<Image>();
+	_diffuseMap->loadImage(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_basecolor.jpg");
+	Resource.addImage("diffuseMap", _diffuseMap);
 
-	Image _normalImg = Image();
-	_normalImg.loadImage(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_normal.jpg", IMG_2D);
-	std::shared_ptr<Texture> _normalMap = std::make_shared<Texture>(_normalImg);
-	Resource.addTexture("normalMap", _normalMap);
+	std::shared_ptr<Image> _normalMap = std::make_shared<Image>();
+	_normalMap->loadImage(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_normal.jpg");
+	Resource.addImage("normalMap", _normalMap);
 }
 
 void XGPApp::loadModels() {
 	std::shared_ptr<BlinnPhongMaterial> mat;
 	mat = std::make_shared<BlinnPhongMaterial>();
 	mat->setProgram(Resource.getShader("test")->id());
-	mat->setDiffuseTex(Resource.getTexture("diffuseMap")->id());
-	mat->setNormalMap(Resource.getTexture("normalMap")->id());
+	mat->setDiffuseTex(Resource.getImage("diffuseMap")->id());
+	mat->setNormalMap(Resource.getImage("normalMap")->id());
 	mat->setSpecular(glm::vec3(1.0f));
 	mat->setShininess(64.f);
 

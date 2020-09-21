@@ -7,8 +7,6 @@ using namespace xgp;
 */
 
 /*
-	OPTIONAL:
-	Add Support for multiple lights (inject text into shader)
 */
 
 
