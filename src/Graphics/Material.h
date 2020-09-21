@@ -11,10 +11,11 @@
 namespace xgp {
 
     enum TextureUnit {
-        DIFFUSE_MAP  = 0,
-        SPECULAR_MAP = 1,
-        NORMAL_MAP   = 2,
-        HEIGHT_MAP   = 3,
+        DIFFUSE_MAP    = 0,
+        SPECULAR_MAP   = 1,
+        NORMAL_MAP     = 2,
+        HEIGHT_MAP     = 3,
+        SKYBOX_CUBEMAP = 4,
     };
 
     class Material {

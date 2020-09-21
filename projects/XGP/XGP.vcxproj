@@ -27,6 +27,7 @@
     <ClInclude Include="..\..\src\Core\Scene.h" />
     <ClInclude Include="..\..\src\Core\SceneObject.h" />
     <ClInclude Include="..\..\src\Core\Shape.h" />
+    <ClInclude Include="..\..\src\Core\Skybox.h" />
     <ClInclude Include="..\..\src\Graphics\BlinnPhongMaterial.h" />
     <ClInclude Include="..\..\src\Graphics\Image.h" />
     <ClInclude Include="..\..\src\Graphics\Material.h" />
@@ -47,6 +48,7 @@
     <ClCompile Include="..\..\src\Core\Scene.cpp" />
     <ClCompile Include="..\..\src\Core\SceneObject.cpp" />
     <ClCompile Include="..\..\src\Core\Shape.cpp" />
+    <ClCompile Include="..\..\src\Core\Skybox.cpp" />
     <ClCompile Include="..\..\src\Graphics\BlinnPhongMaterial.cpp" />
     <ClCompile Include="..\..\src\Graphics\Image.cpp" />
     <ClCompile Include="..\..\src\Graphics\Material.cpp" />

@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include <iostream>
+#include <vector>
 
 namespace xgp {
 
@@ -11,13 +12,6 @@ namespace xgp {
 		IMG_2D = 1,
 		IMG_3D = 2,
 		IMG_CUBE = 3
-	};
-
-	const GLenum TextureTargets[] = {
-		GL_TEXTURE_1D,
-		GL_TEXTURE_2D,
-		GL_TEXTURE_3D,
-		GL_TEXTURE_CUBE_MAP
 	};
 
 	const GLenum PixelFormats[] = {
@@ -41,14 +35,32 @@ namespace xgp {
 		const int width() const;
 		const int height() const;
 		const int channels() const;
-		unsigned char* data() const;
 		const GLuint id() const;
 
 	private:
 		int _width;
 		int _height;
 		int _channels;
-		unsigned char* _data;
+		GLuint _id;
+	};
+
+	class Cubemap {
+	public:
+		Cubemap();
+		~Cubemap();
+
+		//void loadCubemap(const std::string& filepath);
+		void loadCubemap(std::vector<std::string> filepaths);
+
+		const int width() const;
+		const int height() const;
+		const int channels() const;
+		const GLuint id() const;
+
+	private:
+		int _width;
+		int _height;
+		int _channels;
 		GLuint _id;
 	};
 }

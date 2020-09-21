@@ -10,6 +10,7 @@
 #include <Camera.h>
 #include <Scene.h>
 #include <Shader.h>
+#include <Skybox.h>
 
 namespace xgp {
 
@@ -55,11 +56,12 @@ namespace xgp {
 		int _mouseX, _mouseY;
 		float _mouseDx, _mouseDy;
 
+		Scene _scene;
 		Camera* _camera;
 		GLuint _cameraBuffer;
-		Scene _scene;
 		GLuint _lightsBuffer;
 		std::vector<std::shared_ptr<Shader>> _shaders;
+		std::vector<Skybox> _skyboxes;
 	};
 }
 

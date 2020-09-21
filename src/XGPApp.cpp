@@ -95,6 +95,15 @@ void XGPApp::loadShaders() {
 	shader->link();
 	Resource.addShader("test", shader);
 	_shaders.push_back(shader);
+
+	ShaderSource skyboxVS = ShaderSource(GL_VERTEX_SHADER, SHADERS_DIR + "skybox.vs");
+	ShaderSource skyboxFS = ShaderSource(GL_FRAGMENT_SHADER, SHADERS_DIR + "skybox.fs");
+	std::shared_ptr<Shader> skyboxShader = std::make_shared<Shader>("skybox");
+	skyboxShader->addShader(skyboxVS);
+	skyboxShader->addShader(skyboxFS);
+	skyboxShader->link();
+	Resource.addShader("skybox", skyboxShader);
+	_shaders.push_back(skyboxShader);
 }
 
 void XGPApp::loadImages() {
@@ -105,6 +114,19 @@ void XGPApp::loadImages() {
 	std::shared_ptr<Image> _normalMap = std::make_shared<Image>();
 	_normalMap->loadImage(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_normal.jpg");
 	Resource.addImage("normalMap", _normalMap);
+
+	std::vector<std::string> skyFilePaths;
+	skyFilePaths.push_back(IMAGES_DIR + "skybox/right.jpg");
+	skyFilePaths.push_back(IMAGES_DIR + "skybox/left.jpg");
+	skyFilePaths.push_back(IMAGES_DIR + "skybox/top.jpg");
+	skyFilePaths.push_back(IMAGES_DIR + "skybox/bottom.jpg");
+	skyFilePaths.push_back(IMAGES_DIR + "skybox/front.jpg");
+	skyFilePaths.push_back(IMAGES_DIR + "skybox/back.jpg");
+
+	Skybox _sky = Skybox(skyFilePaths);
+	_skyboxes.push_back(_sky);
+
+	_scene.setSkybox(_skyboxes[0]);
 }
 
 void XGPApp::loadModels() {
@@ -219,6 +241,9 @@ void XGPApp::render() {
 	for (std::shared_ptr<Shape> shape : _scene.shapes()) {
 		shape->draw();
 	}
+
+	const Skybox& sky = _scene.skybox();
+	sky.draw();
 }
 
 void XGPApp::setTitle(const std::string& title) {
