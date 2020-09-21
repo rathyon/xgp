@@ -46,10 +46,12 @@ uniform vec3 diffuse;
 uniform vec3 specular;
 uniform float shininess;
 
+uniform samplerCube envMap;
+
 out vec4 outColor;
 
 void main() {
-	/**/
+	/** /
 	vec3 V = normalize(vsIn.viewPosTS - vsIn.positionTS);
 	vec3 N = normalize(texture(normalMap, vsIn.texCoords).rgb * 2.0 - 1.0);
 	vec3 L = normalize(-vsIn.lightDirTS);
@@ -70,6 +72,14 @@ void main() {
 	}
 
 	//outColor = vec4(texture(normalMap, vsIn.texCoords), 1.0);
-	outColor = vec4(diff + spec, 1.0);
+	//outColor = vec4(diff + spec, 1.0);
 	/**/
+
+	vec3 I = normalize(vsIn.position - ViewPos);
+	vec3 N = normalize(texture(normalMap, vsIn.texCoords).rgb * 2.0 - 1.0);
+	vec3 R = reflect(I, N);
+
+	vec3 Reflection = texture(envMap, R).rgb;
+
+	outColor = vec4(Reflection, 1.0);
 }

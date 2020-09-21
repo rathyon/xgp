@@ -26,3 +26,7 @@ const glm::mat3& Shape::normalMatrix() const {
 void Shape::setMaterial(const std::shared_ptr<Material>& mat) {
     _material = mat;
 }
+
+void Shape::updateMaterial(const Skybox& skybox) {
+    _material->update(skybox);
+}

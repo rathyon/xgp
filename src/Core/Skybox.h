@@ -14,13 +14,14 @@ namespace xgp {
 
 		void draw() const;
 
+		GLuint envMap() const;
+
 	private:
 		void genCubeGeometry();
 
 		GLuint _vao;
 		GLuint _prog;
-
-		Cubemap* _cubemap;
+		GLuint _envMap;
 	};
 
 }

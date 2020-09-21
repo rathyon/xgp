@@ -44,6 +44,8 @@ namespace xgp {
 		void loadImages();
 		void loadModels();
 
+		void changeSkybox(int id);
+
 		void uploadCameraData();
 		void uploadLightData();
 

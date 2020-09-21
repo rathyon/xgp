@@ -11,18 +11,15 @@ namespace xgp {
         BlinnPhongMaterial();
 
 		void uploadData();
+		void update(const Skybox& skybox);
 
 		void setAmbient(const glm::vec3& ambient);
-
 		void setDiffuse(const glm::vec3& diffuse);
 		void setDiffuseTex(GLuint diffTex);
-
 		void setSpecular(const glm::vec3& specular);
 		void setSpecularTex(GLuint specTex);
-
 		void setNormalMap(GLuint normalMap);
 		void setHeightMap(GLuint heightMap);
-
 		void setShininess(float shininess);
 
 		glm::vec3 ambient() const;
@@ -34,6 +31,7 @@ namespace xgp {
 		GLuint specularTex() const;
 		GLuint normalMap() const;
 		GLuint heightMap() const;
+		GLuint envMap() const;
 
     private:
         glm::vec3 _ambient;
@@ -45,6 +43,8 @@ namespace xgp {
         GLuint _specularTex;
         GLuint _normalMap;
 		GLuint _heightMap;
+
+		GLuint _envMap;
     };
 
 }

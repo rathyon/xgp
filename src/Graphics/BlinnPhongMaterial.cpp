@@ -5,15 +5,17 @@
 using namespace xgp;
 
 BlinnPhongMaterial::BlinnPhongMaterial() {
-    _ambient = glm::vec3(0.0f);
+    _ambient = glm::vec3(-1.0f);
     _diffuse = glm::vec3(-1.0f);
     _specular = glm::vec3(-1.0f);
-    _shininess = 0.0f;
+    _shininess = -1.0f;
 
     _diffuseTex = -1;
     _specularTex = -1;
     _normalMap = -1;
     _heightMap = -1;
+
+    _envMap = -1;
 }
 
 void BlinnPhongMaterial::uploadData() {
@@ -48,6 +50,16 @@ void BlinnPhongMaterial::uploadData() {
         glBindTexture(GL_TEXTURE_2D, _heightMap);
         setSampler("heightMap", TextureUnit::HEIGHT_MAP);
     }
+
+    if (_envMap != -1) {
+        glActiveTexture(GL_TEXTURE0 + TextureUnit::ENV_CUBEMAP);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, _envMap);
+        setSampler("envMap", TextureUnit::ENV_CUBEMAP);
+    }
+}
+
+void BlinnPhongMaterial::update(const Skybox& skybox) {
+    _envMap = skybox.envMap();
 }
 
 void BlinnPhongMaterial::setAmbient(const glm::vec3& ambient) {
@@ -108,4 +120,8 @@ GLuint BlinnPhongMaterial::normalMap() const {
 
 GLuint BlinnPhongMaterial::heightMap() const {
     return _heightMap;
+}
+
+GLuint BlinnPhongMaterial::envMap() const {
+    return _envMap;
 }

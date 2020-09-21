@@ -8,8 +8,10 @@
 using namespace xgp;
 
 Skybox::Skybox(std::vector<std::string> filepaths) {
-    _cubemap = new Cubemap();
-    _cubemap->loadCubemap(filepaths);
+    Cubemap map = Cubemap();
+    map.loadCubemap(filepaths);
+
+    _envMap = map.id();
 
     genCubeGeometry();
 
@@ -21,14 +23,18 @@ Skybox::~Skybox() { }
 void Skybox::draw() const{
     glUseProgram(_prog);
 
-    glActiveTexture(GL_TEXTURE0 + TextureUnit::SKYBOX_CUBEMAP);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, _cubemap->id());
-    glUniform1i(glGetUniformLocation(_prog, "skybox"), TextureUnit::SKYBOX_CUBEMAP);
+    glActiveTexture(GL_TEXTURE0 + TextureUnit::ENV_CUBEMAP);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, _envMap);
+    glUniform1i(glGetUniformLocation(_prog, "skybox"), TextureUnit::ENV_CUBEMAP);
 
     glBindVertexArray(_vao);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
     glUseProgram(0);
+}
+
+GLuint Skybox::envMap() const {
+    return _envMap;
 }
 
 void Skybox::genCubeGeometry() {

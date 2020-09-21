@@ -5,8 +5,9 @@
 // temporary replacement for future Color/Spectrum class
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
 #include <string>
+
+#include <Skybox.h>
 
 namespace xgp {
 
@@ -15,7 +16,7 @@ namespace xgp {
         SPECULAR_MAP   = 1,
         NORMAL_MAP     = 2,
         HEIGHT_MAP     = 3,
-        SKYBOX_CUBEMAP = 4,
+        ENV_CUBEMAP = 4,
     };
 
     class Material {
@@ -28,6 +29,8 @@ namespace xgp {
         void setProgram(GLuint prog);
 
         virtual void uploadData() = 0;
+
+        virtual void update(const Skybox& skybox) = 0;
 
         void setInt(const std::string& name, int value);
         void setFloat(const std::string& name, float value);

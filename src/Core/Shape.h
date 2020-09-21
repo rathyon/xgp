@@ -24,6 +24,7 @@ namespace xgp {
         void updateMatrix() override;
 
         void setMaterial(const std::shared_ptr<Material>& mat);
+        void updateMaterial(const Skybox& skybox);
 
     protected:
         std::shared_ptr<Geometry> _geometry;

@@ -125,8 +125,6 @@ void XGPApp::loadImages() {
 
 	Skybox _sky = Skybox(skyFilePaths);
 	_skyboxes.push_back(_sky);
-
-	_scene.setSkybox(_skyboxes[0]);
 }
 
 void XGPApp::loadModels() {
@@ -160,6 +158,8 @@ void XGPApp::prepare() {
 	loadShaders();
 	loadImages();
 	loadModels();
+
+	changeSkybox(0);
 
 	// Buffers to the GPU
 	glGenBuffers(1, &_cameraBuffer);
@@ -296,6 +296,10 @@ void XGPApp::mousePosCallback(double xpos, double ypos) {
 
 	_mouseDx = dx;
 	_mouseDy = dy;
+}
+
+void XGPApp::changeSkybox(int id) {
+	_scene.setSkybox(_skyboxes[id]);
 }
 
 void XGPApp::uploadCameraData() {

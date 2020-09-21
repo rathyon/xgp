@@ -17,11 +17,9 @@ void Scene::addLight(const std::shared_ptr<Light>& light) {
 void Scene::setSkybox(const Skybox& skybox) {
     _skybox = &skybox;
 
-    /** /
     for (std::shared_ptr<Shape> shape : _shapes) {
         shape->updateMaterial(skybox);
     }
-    /**/
 }
 
 const std::vector<std::shared_ptr<Shape>>& Scene::shapes() const {
