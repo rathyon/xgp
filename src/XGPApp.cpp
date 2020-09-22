@@ -35,6 +35,9 @@ void XGPApp::init() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+	//Enable MSAA
+	glfwWindowHint(GLFW_SAMPLES, 4);
+
 	_window = glfwCreateWindow(_width, _height, _title.c_str(), NULL, NULL);
 	if (!_window)
 	{
@@ -74,7 +77,7 @@ void XGPApp::init() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-	//glEnable(GL_MULTISAMPLE);
+	glEnable(GL_MULTISAMPLE);
 
 	int fwidth, fheight;
 	glfwGetFramebufferSize(_window, &fwidth, &fheight);
@@ -242,8 +245,8 @@ void XGPApp::render() {
 		shape->draw();
 	}
 
-	const Skybox& sky = _scene.skybox();
-	sky.draw();
+	//const Skybox& sky = _scene.skybox();
+	//sky.draw();
 }
 
 void XGPApp::setTitle(const std::string& title) {

@@ -50,12 +50,36 @@ uniform samplerCube envMap;
 
 out vec4 outColor;
 
+// diffuse/albedo textures are usually stored as sRGB
+vec3 toLinearRGB(vec3 color, float gamma) {
+	return pow(color, vec3(gamma));
+}
+
+vec3 toInverseGamma(vec3 color, float gamma) {
+	return pow(color, vec3(1.0/gamma));
+}
+
+
+float heightScale = 0.05f;
+vec2 parallaxMapping(vec2 uv, vec3 V) {
+	float height = 1.0 - texture(heightMap, uv).r;
+	//vec2 p = V.xy / V.z * (height * heightScale);
+	vec2 p = V.xy * (height * heightScale);
+	return uv - p;
+}
+
 void main() {
-	/** /
+	/**/
 	vec3 V = normalize(vsIn.viewPosTS - vsIn.positionTS);
-	vec3 N = normalize(texture(normalMap, vsIn.texCoords).rgb * 2.0 - 1.0);
+
+	//vec2 texCoords = parallaxMapping(vsIn.texCoords, V);
+	vec2 texCoords = vsIn.texCoords;
+
+	vec3 N = normalize(texture(normalMap, texCoords).rgb * 2.0 - 1.0);
 	vec3 L = normalize(-vsIn.lightDirTS);
 	vec3 H = normalize(L + V);
+	vec3 I = normalize(vsIn.position - ViewPos);
+	vec3 R = reflect(I, N);
 
 	float NdotL = max(dot(N, L), 0.0);
 	float NdotH = max(dot(N, H), 0.0);
@@ -63,7 +87,7 @@ void main() {
 	vec3 diff = vec3(0.0);
 	vec3 spec = vec3(0.0);
 
-	vec3 testDiff = texture(diffuseMap, vsIn.texCoords).rgb;
+	vec3 testDiff = toLinearRGB(texture(diffuseMap, texCoords).rgb, 2.2);
 	vec3 testSpec = vec3(1.0);
 
 	if (NdotL > 0.0){
@@ -71,15 +95,5 @@ void main() {
 		spec = light[0].emission * ( testSpec * pow(NdotH, 64));
 	}
 
-	//outColor = vec4(texture(normalMap, vsIn.texCoords), 1.0);
-	//outColor = vec4(diff + spec, 1.0);
-	/**/
-
-	vec3 I = normalize(vsIn.position - ViewPos);
-	vec3 N = normalize(texture(normalMap, vsIn.texCoords).rgb * 2.0 - 1.0);
-	vec3 R = reflect(I, N);
-
-	vec3 Reflection = texture(envMap, R).rgb;
-
-	outColor = vec4(Reflection, 1.0);
+	outColor = vec4(toInverseGamma(diff + spec, 2.2), 1.0);
 }
