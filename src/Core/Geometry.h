@@ -30,34 +30,21 @@ namespace xgp {
     public:
         Geometry();
 
-        const std::string& name() const;
+        const GLuint VAO() const;
         const std::vector<Vertex>& vertices() const;
         const std::vector<GLuint>& indices()  const;
-        const GLuint VAO() const;
+
+        void setVertices(const std::vector<Vertex>& vertices);
+        void setIndices(const std::vector<GLuint>& indices);
 
         void computeTangents();
-
-        bool loadObj(const std::string& filePath);
 
         void upload();
 
     private:
-        std::string _name;
         GLuint _vao;
-        std::vector<GLuint> _indices;
         std::vector<Vertex> _vertices;
-    };
-
-    struct ObjVertex {
-        glm::vec3 pos;
-        glm::vec3 normal;
-        glm::vec2 texCoord;
-
-        bool operator==(const ObjVertex& v) const {
-            return pos == v.pos &&
-                   normal == v.normal &&
-                   texCoord == v.texCoord;
-        }
+        std::vector<GLuint> _indices;
     };
 
 }

@@ -1,29 +1,11 @@
 #include "Geometry.h"
 
-#define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
-
 #include <iostream>
 #include <unordered_map>
-#include <filesystem>
 
 using namespace xgp;
 
-namespace std {
-    template<> struct hash<ObjVertex> {
-        size_t operator()(ObjVertex const& vertex) const {
-            return ((hash<glm::vec3>()(vertex.pos) ^
-                (hash<glm::vec3>()(vertex.normal) << 1)) >> 1) ^
-                (hash<glm::vec2>()(vertex.texCoord) << 1);
-        }
-    };
-}
-
 Geometry::Geometry() { }
-
-const std::string& Geometry::name() const {
-    return _name;
-}
 
 const GLuint Geometry::VAO() const {
     return _vao;
@@ -37,81 +19,15 @@ const std::vector<GLuint>& Geometry::indices() const {
     return _indices;
 }
 
-bool Geometry::loadObj(const std::string& filePath) {
-    tinyobj::ObjReader objReader = tinyobj::ObjReader();
-    tinyobj::ObjReaderConfig config = tinyobj::ObjReaderConfig();
-    config.vertex_color = false;
-
-    if(!objReader.ParseFromFile(filePath, config)) {
-        std::cerr << objReader.Error() << std::endl;
-        return false;
-    }
-    std::cout << objReader.Warning() << std::endl;
-
-    std::filesystem::path p = std::filesystem::path(filePath);
-    if (!std::filesystem::exists(p))
-        return false;
-
-    _name = p.filename().string();
-    tinyobj::attrib_t attrib = objReader.GetAttrib();
-
-    std::unordered_map<ObjVertex, unsigned int> uniqueVertices{};
-    for (const auto& shape : objReader.GetShapes()) {
-        for (const auto& index : shape.mesh.indices) {
-            ObjVertex objVertex{};
-
-            objVertex.pos = {
-                attrib.vertices[3 * index.vertex_index + 0],
-                attrib.vertices[3 * index.vertex_index + 1],
-                attrib.vertices[3 * index.vertex_index + 2]
-            };
-
-            objVertex.normal = {
-                attrib.normals[3 * index.normal_index + 0],
-                attrib.normals[3 * index.normal_index + 1],
-                attrib.normals[3 * index.normal_index + 2]
-            };
-
-            objVertex.texCoord = {
-                attrib.texcoords[2 * index.texcoord_index + 0],
-                attrib.texcoords[2 * index.texcoord_index + 1]
-                //1.0f - attrib.texcoords[2 * index.texcoord_index + 1] in case it needs to be flipped
-            };
-
-            /** /
-            _indices.push_back(_vertices.size());
-
-            Vertex vertex{};
-            vertex.pos = objVertex.pos;
-            vertex.normal = objVertex.normal;
-            vertex.texCoord = objVertex.texCoord;
-            vertex.tangent = glm::vec3(0);
-            _vertices.push_back(vertex);
-            /**/
-
-            /**/
-            if (uniqueVertices.count(objVertex) == 0) {
-                uniqueVertices[objVertex] = static_cast<GLuint>(_vertices.size());
-
-                // includes (empty) tangent attribute
-                Vertex vertex{};
-                vertex.pos = objVertex.pos;
-                vertex.normal = objVertex.normal;
-                vertex.texCoord = objVertex.texCoord;
-                vertex.tangent = glm::vec3(0);
-
-                _vertices.push_back(vertex);
-            }
-
-            _indices.push_back(uniqueVertices[objVertex]);
-            /**/
-        }
-    }
-
-    computeTangents();
-    return true;
+void Geometry::setVertices(const std::vector<Vertex>& vertices) {
+    _vertices.resize(vertices.size());
+    std::copy(vertices.begin(), vertices.end(), _vertices.begin());
 }
 
+void Geometry::setIndices(const std::vector<GLuint>& indices) {
+    _indices.resize(indices.size());
+    std::copy(indices.begin(), indices.end(), _indices.begin());
+}
 
 void Geometry::computeTangents() {
     // for each triangle, e.g every 3 vertices in _indices

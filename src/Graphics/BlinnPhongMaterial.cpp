@@ -1,57 +1,58 @@
 #include "BlinnPhongMaterial.h"
 
 #include <Resources.h>
+#include <Shader.h>
 
 using namespace xgp;
 
 BlinnPhongMaterial::BlinnPhongMaterial() {
+    _program = Resource.getShader("blinnphong")->id();
+
     _ambient = glm::vec3(-1.0f);
     _diffuse = glm::vec3(-1.0f);
     _specular = glm::vec3(-1.0f);
-    _shininess = -1.0f;
+    _shininess = 1.0f;
 
-    _diffuseTex = -1;
-    _specularTex = -1;
-    _normalMap = -1;
-    _heightMap = -1;
+    _diffuseTex = GL_FALSE;
+    _specularTex = GL_FALSE;
+    _normalMap = GL_FALSE;
+    _heightMap = GL_FALSE;
 
-    _envMap = -1;
+    _envMap = GL_FALSE;
 }
 
 void BlinnPhongMaterial::uploadData() {
     // set shader variables
-    // TODO:
-    // test if setting a value of -1 is usable for checking presence of textures (instead of 0)
     setVec3("ambient", _ambient);
     setVec3("diffuse", _diffuse);
     setVec3("specular", _specular);
     setFloat("shininess", _shininess);
 
-    if (_diffuseTex != -1) {
+    if (_diffuseTex != GL_FALSE) {
         glActiveTexture(GL_TEXTURE0 + TextureUnit::DIFFUSE_MAP);
         glBindTexture(GL_TEXTURE_2D, _diffuseTex);
         setSampler("diffuseMap", TextureUnit::DIFFUSE_MAP);
     }
 
-    if (_specularTex != -1) {
+    if (_specularTex != GL_FALSE) {
         glActiveTexture(GL_TEXTURE0 + TextureUnit::SPECULAR_MAP);
         glBindTexture(GL_TEXTURE_2D, _specularTex);
         setSampler("specularMap", TextureUnit::SPECULAR_MAP);
     }
 
-    if (_normalMap != -1) {
+    if (_normalMap != GL_FALSE) {
         glActiveTexture(GL_TEXTURE0 + TextureUnit::NORMAL_MAP);
         glBindTexture(GL_TEXTURE_2D, _normalMap);
         setSampler("normalMap", TextureUnit::NORMAL_MAP);
     }
 
-    if (_heightMap != -1) {
+    if (_heightMap != GL_FALSE) {
         glActiveTexture(GL_TEXTURE0 + TextureUnit::HEIGHT_MAP);
         glBindTexture(GL_TEXTURE_2D, _heightMap);
         setSampler("heightMap", TextureUnit::HEIGHT_MAP);
     }
 
-    if (_envMap != -1) {
+    if (_envMap != GL_FALSE) {
         glActiveTexture(GL_TEXTURE0 + TextureUnit::ENV_CUBEMAP);
         glBindTexture(GL_TEXTURE_CUBE_MAP, _envMap);
         setSampler("envMap", TextureUnit::ENV_CUBEMAP);

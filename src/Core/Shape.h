@@ -18,7 +18,6 @@ namespace xgp {
 
         const std::shared_ptr<Material>& material() const;
         const std::shared_ptr<Geometry>& geometry() const;
-
         const glm::mat3& normalMatrix() const;
 
         void updateMatrix() override;

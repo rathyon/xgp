@@ -8,12 +8,12 @@
 
 using namespace xgp;
 
-Image::Image() { }
+Texture::Texture() { }
 
-Image::~Image() {
+Texture::~Texture() {
 }
 
-void Image::loadImage(const std::string& filepath) {
+void Texture::loadTexture(const std::string& filepath) {
 	glGenTextures(1, &_id);
 	glBindTexture(GL_TEXTURE_2D, _id);
 
@@ -41,8 +41,8 @@ void Image::loadImage(const std::string& filepath) {
 	glGenerateMipmap(GL_TEXTURE_2D);
 	Utils::checkOpenGLError("Error in generating mipmaps");
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -52,19 +52,19 @@ void Image::loadImage(const std::string& filepath) {
 	stbi_image_free(data);
 }
 
-const int Image::width() const {
+const int Texture::width() const {
 	return _width;
 }
 
-const int Image::height() const {
+const int Texture::height() const {
 	return _height;
 }
 
-const int Image::channels() const {
+const int Texture::channels() const {
 	return _channels;
 }
 
-const GLuint Image::id() const {
+const GLuint Texture::id() const {
 	return _id;
 }
 

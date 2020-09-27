@@ -22,15 +22,12 @@ namespace xgp {
 	GL_RGBA
 	};
 
-	/*
-		Images are 2D by default, might be extended in the future to accomodate other types
-	*/
-	class Image {
+	class Texture {
 	public:
-		Image();
-		~Image();
+		Texture();
+		~Texture();
 
-		void loadImage(const std::string& filepath);
+		void loadTexture(const std::string& filepath);
 
 		const int width() const;
 		const int height() const;

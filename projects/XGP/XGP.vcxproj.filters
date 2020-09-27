@@ -45,9 +45,6 @@
     <ClInclude Include="..\..\src\Core\Camera.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Core\Geometry.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Core\Model.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
@@ -96,15 +93,15 @@
     <ClInclude Include="..\..\src\Core\Skybox.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Core\Geometry.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Core\Shape.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Core\Camera.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Core\Geometry.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Core\Model.cpp">
@@ -156,6 +153,9 @@
       <Filter>Source Files\Lights</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Core\Skybox.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Core\Geometry.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>

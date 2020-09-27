@@ -21,6 +21,13 @@ const std::string SHADERS_DIR = "../../src/Shaders/";
 const std::string MODELS_DIR = "../../assets/models/";
 const std::string IMAGES_DIR = "../../assets/images/";
 
+/*
+	TODO:
+	Load OBJ files from Geometry
+		Load multiple models/meshes from OBJ file
+		Load materials from OBJ file
+*/
+
 XGPApp::XGPApp(const std::string title, int width, int height)
 	: _title(title), _width(width) , _height(height), _window(nullptr) {
 }
@@ -90,13 +97,17 @@ void XGPApp::init() {
 }
 
 void XGPApp::loadShaders() {
-	ShaderSource vert = ShaderSource(GL_VERTEX_SHADER, SHADERS_DIR + "flat.vs");
-	ShaderSource frag = ShaderSource(GL_FRAGMENT_SHADER, SHADERS_DIR + "flat.fs");
-	std::shared_ptr<Shader> shader = std::make_shared<Shader>("test");
-	shader->addShader(vert);
-	shader->addShader(frag);
+	// frag shader with common functions
+	ShaderSource commonFS = ShaderSource(GL_FRAGMENT_SHADER, SHADERS_DIR + "common.fs");
+
+	ShaderSource blinnphongVS = ShaderSource(GL_VERTEX_SHADER, SHADERS_DIR + "blinnphong.vs");
+	ShaderSource blinnphongFS = ShaderSource(GL_FRAGMENT_SHADER, SHADERS_DIR + "blinnphong.fs");
+	std::shared_ptr<Shader> shader = std::make_shared<Shader>("blinnphong");
+	shader->addShader(blinnphongVS);
+	shader->addShader(blinnphongFS);
+	shader->addShader(commonFS);
 	shader->link();
-	Resource.addShader("test", shader);
+	Resource.addShader("blinnphong", shader);
 	_shaders.push_back(shader);
 
 	ShaderSource skyboxVS = ShaderSource(GL_VERTEX_SHADER, SHADERS_DIR + "skybox.vs");
@@ -104,19 +115,20 @@ void XGPApp::loadShaders() {
 	std::shared_ptr<Shader> skyboxShader = std::make_shared<Shader>("skybox");
 	skyboxShader->addShader(skyboxVS);
 	skyboxShader->addShader(skyboxFS);
+	skyboxShader->addShader(commonFS);
 	skyboxShader->link();
 	Resource.addShader("skybox", skyboxShader);
 	_shaders.push_back(skyboxShader);
 }
 
 void XGPApp::loadImages() {
-	std::shared_ptr<Image> _diffuseMap = std::make_shared<Image>();
-	_diffuseMap->loadImage(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_basecolor.jpg");
-	Resource.addImage("diffuseMap", _diffuseMap);
+	std::shared_ptr<Texture> _diffuseMap = std::make_shared<Texture>();
+	_diffuseMap->loadTexture(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_basecolor.jpg");
+	Resource.addTexture("diffuseMap", _diffuseMap);
 
-	std::shared_ptr<Image> _normalMap = std::make_shared<Image>();
-	_normalMap->loadImage(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_normal.jpg");
-	Resource.addImage("normalMap", _normalMap);
+	std::shared_ptr<Texture> _normalMap = std::make_shared<Texture>();
+	_normalMap->loadTexture(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_normal.jpg");
+	Resource.addTexture("normalMap", _normalMap);
 
 	std::vector<std::string> skyFilePaths;
 	skyFilePaths.push_back(IMAGES_DIR + "skybox/right.jpg");
@@ -131,20 +143,26 @@ void XGPApp::loadImages() {
 }
 
 void XGPApp::loadModels() {
+	/** /
 	std::shared_ptr<BlinnPhongMaterial> mat;
 	mat = std::make_shared<BlinnPhongMaterial>();
-	mat->setProgram(Resource.getShader("test")->id());
-	mat->setDiffuseTex(Resource.getImage("diffuseMap")->id());
-	mat->setNormalMap(Resource.getImage("normalMap")->id());
+	mat->setDiffuseTex(Resource.getTexture("diffuseMap")->id());
+	mat->setNormalMap(Resource.getTexture("normalMap")->id());
 	mat->setSpecular(glm::vec3(1.0f));
 	mat->setShininess(64.f);
 
-	std::shared_ptr<Model> model = std::make_shared<Model>(MODELS_DIR + "cube.obj");
-	model->prepare();
-	model->updateMatrix();
-	model->setMaterial(mat);
-	Resource.addShape("model", model);
-	_scene.addShape(model);
+	std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "cube.obj");
+	for (std::shared_ptr<Model> model : models) {
+		model->setMaterial(mat);
+		_scene.addShape(model);
+	}
+	/**/
+
+	std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "/crytek sponza/sponza.obj");
+	for (std::shared_ptr<Model> model : models) {
+		model->setScale(0.01f, 0.01f, 0.01f);
+		_scene.addShape(model);
+	}
 }
 
 

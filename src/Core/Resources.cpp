@@ -31,8 +31,8 @@ void Resources::addShader(const std::string& name, const std::shared_ptr<Shader>
     _shaders[name] = shader;
 }
 
-void Resources::addImage(const std::string& name, const std::shared_ptr<Image>& image) {
-    _images[name] = image;
+void Resources::addTexture(const std::string& name, const std::shared_ptr<Texture>& texture) {
+    _textures[name] = texture;
 }
 
 bool Resources::deleteGeometry(const std::string& name) {
@@ -65,10 +65,10 @@ bool Resources::deleteShader(const std::string& name) {
     return false;
 }
 
-bool Resources::deleteImage(const std::string& name) {
-    auto it = _images.find(name);
-    if (it != _images.end()) {
-        _images.erase(name);
+bool Resources::deleteTexture(const std::string& name) {
+    auto it = _textures.find(name);
+    if (it != _textures.end()) {
+        _textures.erase(name);
         return true;
     }
 
@@ -76,24 +76,36 @@ bool Resources::deleteImage(const std::string& name) {
 }
 
 Shader* Resources::getShader(const std::string& name) {
-    return _shaders.at(name).get();
+    if (_shaders.find(name) == _shaders.end())
+        return nullptr;
+    else
+        return _shaders.at(name).get();
 }
 
 Geometry* Resources::getGeometry(const std::string& name) {
-    return _geometry.at(name).get();
+    if (_geometry.find(name) == _geometry.end())
+        return nullptr;
+    else
+        return _geometry.at(name).get();
 }
 
 Shape* Resources::getShape(const std::string& name) {
-    return _shapes.at(name).get();
+    if (_shapes.find(name) == _shapes.end())
+        return nullptr;
+    else
+        return _shapes.at(name).get();
 }
 
-Image* Resources::getImage(const std::string& name) {
-    return _images.at(name).get();
+Texture* Resources::getTexture(const std::string& name) {
+    if (_textures.find(name) == _textures.end())
+        return nullptr;
+    else
+        return _textures.at(name).get();
 }
 
 void Resources::cleanup() {
     _geometry.clear();
     _shapes.clear();
     _shaders.clear();
-    _images.clear();
+    _textures.clear();
 }
