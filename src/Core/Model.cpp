@@ -92,12 +92,11 @@ std::vector<std::shared_ptr<Model>> xgp::loadOBJ(const std::string& filePath) {
         material->setShininess(objMaterial.shininess);
 
         if (objMaterial.diffuse_texname.size() > 0) {
-            if(Resource.getTexture(objMaterial.diffuse_texname))
-                material->setDiffuseTex(Resource.getTexture(objMaterial.diffuse_texname)->id());
+            if(Resource.getImage(objMaterial.diffuse_texname))
+                material->setDiffuseTex(Resource.getImage(objMaterial.diffuse_texname)->id());
             else {
-                std::shared_ptr<Texture> diffuseMap = std::make_shared<Texture>();
-                diffuseMap->loadTexture(p.parent_path().string() + "/" + objMaterial.diffuse_texname);
-                Resource.addTexture(objMaterial.diffuse_texname, diffuseMap);
+                std::shared_ptr<Texture> diffuseMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.diffuse_texname);
+                Resource.addImage(objMaterial.diffuse_texname, diffuseMap);
                 material->setDiffuseTex(diffuseMap->id());
             }
         }
@@ -106,12 +105,11 @@ std::vector<std::shared_ptr<Model>> xgp::loadOBJ(const std::string& filePath) {
         }
 
         if (objMaterial.specular_texname.size() > 0) {
-            if (Resource.getTexture(objMaterial.specular_texname))
-                material->setSpecularTex(Resource.getTexture(objMaterial.specular_texname)->id());
+            if (Resource.getImage(objMaterial.specular_texname))
+                material->setSpecularTex(Resource.getImage(objMaterial.specular_texname)->id());
             else {
-                std::shared_ptr<Texture> specularMap = std::make_shared<Texture>();
-                specularMap->loadTexture(p.parent_path().string() + "/" + objMaterial.specular_texname);
-                Resource.addTexture(objMaterial.specular_texname, specularMap);
+                std::shared_ptr<Texture> specularMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.specular_texname);
+                Resource.addImage(objMaterial.specular_texname, specularMap);
                 material->setSpecularTex(specularMap->id());
             }
         }
@@ -120,24 +118,22 @@ std::vector<std::shared_ptr<Model>> xgp::loadOBJ(const std::string& filePath) {
         }
 
         if (objMaterial.normal_texname.size() > 0) {
-            if (Resource.getTexture(objMaterial.normal_texname))
-                material->setNormalMap(Resource.getTexture(objMaterial.normal_texname)->id());
+            if (Resource.getImage(objMaterial.normal_texname))
+                material->setNormalMap(Resource.getImage(objMaterial.normal_texname)->id());
             else {
-                std::shared_ptr<Texture> normalMap = std::make_shared<Texture>();
-                normalMap->loadTexture(p.parent_path().string() + "/" + objMaterial.normal_texname);
-                Resource.addTexture(objMaterial.normal_texname, normalMap);
+                std::shared_ptr<Texture> normalMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.normal_texname);
+                Resource.addImage(objMaterial.normal_texname, normalMap);
                 material->setNormalMap(normalMap->id());
             }
         }
 
         // also known as height map (I think?)
         if (objMaterial.bump_texname.size() > 0) {
-            if (Resource.getTexture(objMaterial.bump_texname))
-                material->setHeightMap(Resource.getTexture(objMaterial.bump_texname)->id());
+            if (Resource.getImage(objMaterial.bump_texname))
+                material->setHeightMap(Resource.getImage(objMaterial.bump_texname)->id());
             else {
-                std::shared_ptr<Texture> heightMap = std::make_shared<Texture>();
-                heightMap->loadTexture(p.parent_path().string() + "/" + objMaterial.bump_texname);
-                Resource.addTexture(objMaterial.bump_texname, heightMap);
+                std::shared_ptr<Texture> heightMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.bump_texname);
+                Resource.addImage(objMaterial.bump_texname, heightMap);
                 material->setHeightMap(heightMap->id());
             }
         }

@@ -2,28 +2,19 @@
 #define __XGP_MATERIAL_H__
 
 #include <GL/glew.h>
-// temporary replacement for future Color/Spectrum class
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <string>
 
 #include <Skybox.h>
 
-namespace xgp {
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-    enum TextureUnit {
-        DIFFUSE_MAP    = 0,
-        SPECULAR_MAP   = 1,
-        NORMAL_MAP     = 2,
-        HEIGHT_MAP     = 3,
-        ENV_CUBEMAP = 4,
-    };
+namespace xgp {
 
     class Material {
     public:
         Material() { }
 
-        void use() const;
         GLuint program() const;
 
         void setProgram(GLuint prog);
@@ -32,6 +23,7 @@ namespace xgp {
 
         virtual void update(const Skybox& skybox) = 0;
 
+    protected:
         void setInt(const std::string& name, int value);
         void setFloat(const std::string& name, float value);
         void setVec3(const std::string& name, glm::vec3& vec);
@@ -40,7 +32,6 @@ namespace xgp {
         void setMat4(const std::string& name, glm::mat4& mat);
         void setSampler(const std::string& name, int id);
 
-    protected:
         GLuint _program;
     };
 

@@ -9,10 +9,7 @@ in FragData {
     vec3 position;
     vec3 normal; 
     vec2 texCoords;
-    vec3 positionTS;
-    vec3 viewPosTS;
-    vec3 lightPosTS;
-    vec3 lightDirTS;
+    mat3 TBN;
 } vsIn;
 
 /* ==============================================================================
@@ -63,7 +60,6 @@ uniform samplerCube envMap;
 vec3 toLinearRGB(vec3 color, float gamma);
 vec3 toInverseGamma(vec3 color, float gamma);
 vec3 reinhardToneMap(vec3 color);
-vec3 exposureToneMap(vec3 color, float exposure);
 
 /* ==============================================================================
         Stage Outputs
@@ -85,7 +81,9 @@ vec3 fetchSpecular() {
 }
 
 vec3 fetchNormal() {
-	return normalize(texture(normalMap, vsIn.texCoords).rgb * 2.0 - 1.0);
+	vec3 normal = texture(normalMap, vsIn.texCoords).rgb;
+	normal = normal * 2.0 - 1.0; // remap from [0,1] to [-1,1]
+	return normalize(vsIn.TBN * normal); //from tangent space to world space
 }
 
 float fetchAlpha() {
@@ -93,11 +91,10 @@ float fetchAlpha() {
 }
 
 void main() {
-	/** /
-	vec3 V = normalize(vsIn.viewPosTS - vsIn.positionTS);
+	vec3 V = normalize(ViewPos - vsIn.position);
 
 	vec3 N = fetchNormal();
-	vec3 L = normalize(-vsIn.lightDirTS);
+	vec3 L = normalize(-light[0].direction);
 	vec3 H = normalize(L + V);
 	vec3 I = normalize(vsIn.position - ViewPos);
 	vec3 R = reflect(I, N);
@@ -113,7 +110,5 @@ void main() {
 		spec = light[0].emission * ( fetchSpecular() * pow(NdotH, 64));
 	}
 
-	outColor = vec4(toInverseGamma(diff + spec, 2.2), 1.0);
-	/**/
-	outColor = vec4(fetchDiffuse(), fetchAlpha());
+	outColor = vec4(toInverseGamma(reinhardToneMap(diff + spec), 2.2), fetchAlpha());
 }

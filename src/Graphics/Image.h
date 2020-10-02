@@ -3,7 +3,6 @@
 
 #include <GL/glew.h>
 #include <iostream>
-#include <vector>
 
 namespace xgp {
 
@@ -22,43 +21,38 @@ namespace xgp {
 	GL_RGBA
 	};
 
-	class Texture {
-	public:
-		Texture();
-		~Texture();
+	enum class CubemapType {
+		SKYBOX,
+		IRRADIANCE,
+		GGX
+	};
 
-		void loadTexture(const std::string& filepath);
+	class Image {
+	public:
+		Image() { }
 
 		const int width() const;
 		const int height() const;
 		const int channels() const;
 		const GLuint id() const;
 
-	private:
+	protected:
 		int _width;
 		int _height;
 		int _channels;
 		GLuint _id;
 	};
 
-	class Cubemap {
+	class Texture : public Image {
 	public:
-		Cubemap();
+		Texture(const std::string& filepath);
+		~Texture();
+	};
+
+	class Cubemap : public Image {
+	public:
+		Cubemap(std::string directory, CubemapType type);
 		~Cubemap();
-
-		//void loadCubemap(const std::string& filepath);
-		void loadCubemap(std::vector<std::string> filepaths);
-
-		const int width() const;
-		const int height() const;
-		const int channels() const;
-		const GLuint id() const;
-
-	private:
-		int _width;
-		int _height;
-		int _channels;
-		GLuint _id;
 	};
 }
 

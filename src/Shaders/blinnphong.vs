@@ -51,10 +51,7 @@ out FragData {
     vec3 position;
     vec3 normal; 
     vec2 texCoords;
-    vec3 positionTS;
-    vec3 viewPosTS;
-    vec3 lightPosTS;
-    vec3 lightDirTS;
+    mat3 TBN;
 } vsOut;
 
 void main() {
@@ -67,12 +64,7 @@ void main() {
     T = normalize(T - dot(T,N) * N);
     vec3 B = cross(N,T);
 
-    mat3 TBN = transpose(mat3(T, B, N));
-
-    vsOut.positionTS = TBN * vec3(ModelMatrix * vec4(Position, 1.0));
-    vsOut.viewPosTS = TBN * ViewPos;
-    vsOut.lightPosTS = TBN * light[0].position;
-    vsOut.lightDirTS = TBN * light[0].direction;
+    vsOut.TBN = mat3(T, B, N);
 
     gl_Position = ViewProjMatrix * vec4(vsOut.position, 1.0);
 }

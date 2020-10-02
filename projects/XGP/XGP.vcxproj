@@ -31,6 +31,7 @@
     <ClInclude Include="..\..\src\Graphics\BlinnPhongMaterial.h" />
     <ClInclude Include="..\..\src\Graphics\Image.h" />
     <ClInclude Include="..\..\src\Graphics\Material.h" />
+    <ClInclude Include="..\..\src\Graphics\PBRMaterial.h" />
     <ClInclude Include="..\..\src\Graphics\Shader.h" />
     <ClInclude Include="..\..\src\Lights\DirectionalLight.h" />
     <ClInclude Include="..\..\src\Lights\Light.h" />
@@ -52,6 +53,7 @@
     <ClCompile Include="..\..\src\Graphics\BlinnPhongMaterial.cpp" />
     <ClCompile Include="..\..\src\Graphics\Image.cpp" />
     <ClCompile Include="..\..\src\Graphics\Material.cpp" />
+    <ClCompile Include="..\..\src\Graphics\PBRMaterial.cpp" />
     <ClCompile Include="..\..\src\Graphics\Shader.cpp" />
     <ClCompile Include="..\..\src\Lights\DirectionalLight.cpp" />
     <ClCompile Include="..\..\src\Lights\Light.cpp" />
@@ -73,27 +75,23 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -139,20 +137,21 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Programming\xgp\src\Lights;F:\Programming\xgp\src\Utils;F:\Programming\xgp\ext\stb_image;F:\Programming\xgp\src\Graphics;F:\Programming\xgp\src\Core;F:\Programming\xgp\src;F:\Programming\xgp\ext\tinyobj;F:\Programming\xgp\ext;F:\Programming\xgp\ext\glfw\include;F:\Programming\xgp\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\Utils;$(SolutionDir)..\src\Lights;$(SolutionDir)..\src\Graphics;$(SolutionDir)..\src\Core;$(SolutionDir)..\src;$(SolutionDir)..\ext;$(SolutionDir)..\ext\tinyobj;$(SolutionDir)..\ext\stb_image;$(SolutionDir)..\ext\glfw\include;$(SolutionDir)..\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>F:\Programming\xgp\ext\glfw\lib\$(Platform);F:\Programming\xgp\ext\glew\lib\Release\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\ext\glfw\lib\$(Platform);$(SolutionDir)..\ext\glew\lib\Release\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>COPY /Y "$(SolutionDir)..\ext\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)..\bin\$(Configuration)\$(Platform)\."</Command>
+      <Command>COPY /Y "$(SolutionDir)..\ext\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)..\bin\$(Configuration)\$(Platform)\."
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -163,18 +162,20 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Programming\xgp\ext\glfw\include;F:\Programming\xgp\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\Utils;$(SolutionDir)..\src\Lights;$(SolutionDir)..\src\Graphics;$(SolutionDir)..\src\Core;$(SolutionDir)..\src;$(SolutionDir)..\ext;$(SolutionDir)..\ext\tinyobj;$(SolutionDir)..\ext\stb_image;$(SolutionDir)..\ext\glfw\include;$(SolutionDir)..\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>F:\Programming\xgp\ext\glfw\lib\$(Platform);F:\Programming\xgp\ext\glew\lib\Release\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\ext\glfw\lib\$(Platform);$(SolutionDir)..\ext\glew\lib\Release\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>COPY /Y "$(SolutionDir)..\ext\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)..\bin\$(Configuration)\$(Platform)\."</Command>
+      <Command>COPY /Y "$(SolutionDir)..\ext\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)..\bin\$(Configuration)\$(Platform)\."
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -183,20 +184,21 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Programming\xgp\src\Lights;F:\Programming\xgp\src\Utils;F:\Programming\xgp\ext\stb_image;F:\Programming\xgp\src\Graphics;F:\Programming\xgp\src\Core;F:\Programming\xgp\src;F:\Programming\xgp\ext\tinyobj;F:\Programming\xgp\ext;F:\Programming\xgp\ext\glfw\include;F:\Programming\xgp\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\Utils;$(SolutionDir)..\src\Lights;$(SolutionDir)..\src\Graphics;$(SolutionDir)..\src\Core;$(SolutionDir)..\src;$(SolutionDir)..\ext;$(SolutionDir)..\ext\tinyobj;$(SolutionDir)..\ext\stb_image;$(SolutionDir)..\ext\glfw\include;$(SolutionDir)..\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>F:\Programming\xgp\ext\glfw\lib\$(Platform);F:\Programming\xgp\ext\glew\lib\Release\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\ext\glfw\lib\$(Platform);$(SolutionDir)..\ext\glew\lib\Release\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>COPY /Y "$(SolutionDir)..\ext\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)..\bin\$(Configuration)\$(Platform)\."</Command>
+      <Command>COPY /Y "$(SolutionDir)..\ext\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)..\bin\$(Configuration)\$(Platform)\."
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -207,18 +209,20 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Programming\xgp\ext\glfw\include;F:\Programming\xgp\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\Utils;$(SolutionDir)..\src\Lights;$(SolutionDir)..\src\Graphics;$(SolutionDir)..\src\Core;$(SolutionDir)..\src;$(SolutionDir)..\ext;$(SolutionDir)..\ext\tinyobj;$(SolutionDir)..\ext\stb_image;$(SolutionDir)..\ext\glfw\include;$(SolutionDir)..\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>F:\Programming\xgp\ext\glfw\lib\$(Platform);F:\Programming\xgp\ext\glew\lib\Release\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\ext\glfw\lib\$(Platform);$(SolutionDir)..\ext\glew\lib\Release\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>COPY /Y "$(SolutionDir)..\ext\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)..\bin\$(Configuration)\$(Platform)\."</Command>
+      <Command>COPY /Y "$(SolutionDir)..\ext\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)..\bin\$(Configuration)\$(Platform)\."
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

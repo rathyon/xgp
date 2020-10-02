@@ -31,8 +31,8 @@ void Resources::addShader(const std::string& name, const std::shared_ptr<Shader>
     _shaders[name] = shader;
 }
 
-void Resources::addTexture(const std::string& name, const std::shared_ptr<Texture>& texture) {
-    _textures[name] = texture;
+void Resources::addImage(const std::string& name, const std::shared_ptr<Image>& img) {
+    _images[name] = img;
 }
 
 bool Resources::deleteGeometry(const std::string& name) {
@@ -65,10 +65,10 @@ bool Resources::deleteShader(const std::string& name) {
     return false;
 }
 
-bool Resources::deleteTexture(const std::string& name) {
-    auto it = _textures.find(name);
-    if (it != _textures.end()) {
-        _textures.erase(name);
+bool Resources::deleteImage(const std::string& name) {
+    auto it = _images.find(name);
+    if (it != _images.end()) {
+        _images.erase(name);
         return true;
     }
 
@@ -96,16 +96,16 @@ Shape* Resources::getShape(const std::string& name) {
         return _shapes.at(name).get();
 }
 
-Texture* Resources::getTexture(const std::string& name) {
-    if (_textures.find(name) == _textures.end())
+Image* Resources::getImage(const std::string& name) {
+    if (_images.find(name) == _images.end())
         return nullptr;
     else
-        return _textures.at(name).get();
+        return _images.at(name).get();
 }
 
 void Resources::cleanup() {
     _geometry.clear();
     _shapes.clear();
     _shaders.clear();
-    _textures.clear();
+    _images.clear();
 }

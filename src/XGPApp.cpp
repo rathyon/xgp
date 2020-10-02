@@ -21,13 +21,6 @@ const std::string SHADERS_DIR = "../../src/Shaders/";
 const std::string MODELS_DIR = "../../assets/models/";
 const std::string IMAGES_DIR = "../../assets/images/";
 
-/*
-	TODO:
-	Load OBJ files from Geometry
-		Load multiple models/meshes from OBJ file
-		Load materials from OBJ file
-*/
-
 XGPApp::XGPApp(const std::string title, int width, int height)
 	: _title(title), _width(width) , _height(height), _window(nullptr) {
 }
@@ -82,9 +75,8 @@ void XGPApp::init() {
 	glFrontFace(GL_CCW);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	glEnable(GL_MULTISAMPLE);
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	int fwidth, fheight;
 	glfwGetFramebufferSize(_window, &fwidth, &fheight);
@@ -122,32 +114,24 @@ void XGPApp::loadShaders() {
 }
 
 void XGPApp::loadImages() {
-	std::shared_ptr<Texture> _diffuseMap = std::make_shared<Texture>();
-	_diffuseMap->loadTexture(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_basecolor.jpg");
-	Resource.addTexture("diffuseMap", _diffuseMap);
+	/**/
+	std::shared_ptr<Texture> _diffuseMap = std::make_shared<Texture>(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_basecolor.jpg");
+	Resource.addImage("diffuseMap", _diffuseMap);
 
-	std::shared_ptr<Texture> _normalMap = std::make_shared<Texture>();
-	_normalMap->loadTexture(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_normal.jpg");
-	Resource.addTexture("normalMap", _normalMap);
+	std::shared_ptr<Texture> _normalMap = std::make_shared<Texture>(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_normal.jpg");
+	Resource.addImage("normalMap", _normalMap);
+	/**/
 
-	std::vector<std::string> skyFilePaths;
-	skyFilePaths.push_back(IMAGES_DIR + "skybox/right.jpg");
-	skyFilePaths.push_back(IMAGES_DIR + "skybox/left.jpg");
-	skyFilePaths.push_back(IMAGES_DIR + "skybox/top.jpg");
-	skyFilePaths.push_back(IMAGES_DIR + "skybox/bottom.jpg");
-	skyFilePaths.push_back(IMAGES_DIR + "skybox/front.jpg");
-	skyFilePaths.push_back(IMAGES_DIR + "skybox/back.jpg");
-
-	Skybox _sky = Skybox(skyFilePaths);
+	Skybox _sky = Skybox(IMAGES_DIR + "forest/");
 	_skyboxes.push_back(_sky);
 }
 
 void XGPApp::loadModels() {
-	/** /
+	/**/
 	std::shared_ptr<BlinnPhongMaterial> mat;
 	mat = std::make_shared<BlinnPhongMaterial>();
-	mat->setDiffuseTex(Resource.getTexture("diffuseMap")->id());
-	mat->setNormalMap(Resource.getTexture("normalMap")->id());
+	mat->setDiffuseTex(Resource.getImage("diffuseMap")->id());
+	mat->setNormalMap(Resource.getImage("normalMap")->id());
 	mat->setSpecular(glm::vec3(1.0f));
 	mat->setShininess(64.f);
 
@@ -158,11 +142,13 @@ void XGPApp::loadModels() {
 	}
 	/**/
 
-	std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "/crytek sponza/sponza.obj");
+	/** /
+	std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "crytek sponza/sponza.obj");
 	for (std::shared_ptr<Model> model : models) {
 		model->setScale(0.01f, 0.01f, 0.01f);
 		_scene.addShape(model);
 	}
+	/**/
 }
 
 
@@ -208,6 +194,8 @@ void XGPApp::loop() {
 		double newTime = glfwGetTime();
 		double dt = newTime - _oldTime;
 		_oldTime = newTime;
+
+		glfwSetWindowTitle(_window, (_title + " FPS: " + std::to_string(1.0f / dt)).c_str());
 
 		// Limit the delta time to avoid large intervals
 		if (dt > 0.25f)
@@ -263,8 +251,8 @@ void XGPApp::render() {
 		shape->draw();
 	}
 
-	//const Skybox& sky = _scene.skybox();
-	//sky.draw();
+	const Skybox& sky = _scene.skybox();
+	sky.draw();
 }
 
 void XGPApp::setTitle(const std::string& title) {

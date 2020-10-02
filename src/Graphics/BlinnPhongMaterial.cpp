@@ -29,33 +29,33 @@ void BlinnPhongMaterial::uploadData() {
     setFloat("shininess", _shininess);
 
     if (_diffuseTex != GL_FALSE) {
-        glActiveTexture(GL_TEXTURE0 + TextureUnit::DIFFUSE_MAP);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, _diffuseTex);
-        setSampler("diffuseMap", TextureUnit::DIFFUSE_MAP);
+        setSampler("diffuseTex", 0);
     }
 
     if (_specularTex != GL_FALSE) {
-        glActiveTexture(GL_TEXTURE0 + TextureUnit::SPECULAR_MAP);
+        glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, _specularTex);
-        setSampler("specularMap", TextureUnit::SPECULAR_MAP);
+        setSampler("specularTex", 1);
     }
 
     if (_normalMap != GL_FALSE) {
-        glActiveTexture(GL_TEXTURE0 + TextureUnit::NORMAL_MAP);
+        glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, _normalMap);
-        setSampler("normalMap", TextureUnit::NORMAL_MAP);
+        setSampler("normalMap", 2);
     }
 
     if (_heightMap != GL_FALSE) {
-        glActiveTexture(GL_TEXTURE0 + TextureUnit::HEIGHT_MAP);
+        glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, _heightMap);
-        setSampler("heightMap", TextureUnit::HEIGHT_MAP);
+        setSampler("heightMap", 3);
     }
 
     if (_envMap != GL_FALSE) {
-        glActiveTexture(GL_TEXTURE0 + TextureUnit::ENV_CUBEMAP);
+        glActiveTexture(GL_TEXTURE4);
         glBindTexture(GL_TEXTURE_CUBE_MAP, _envMap);
-        setSampler("envMap", TextureUnit::ENV_CUBEMAP);
+        setSampler("envMap", 4);
     }
 }
 
