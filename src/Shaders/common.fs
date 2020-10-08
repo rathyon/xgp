@@ -30,9 +30,12 @@ vec2 parallaxMapping(sampler2D heightMap, vec2 uv, vec3 V, float heightScale) {
 	return uv - p;
 }
 
-vec3 fresnelSchlick(float cosTheta, vec3 F0)
-{
+vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness) {
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
 /* ============================================================================
@@ -40,17 +43,18 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
  ============================================================================ */
 
  float brdfLambert() {
- 	return 1.0 / PI;
+ 	// return 1.0 / PI;
+ 	return 0.318309886183791;
  }
 
  /* ============================================================================
         Specular BRDFs
  ============================================================================*/
 
- float specCookTorrance(float NdotV, float NdotL, float D, float F, float G) {
- 	float nom = D * F * G;
+ vec3 specCookTorrance(float NdotV, float NdotL, float D, vec3 F, float G) {
+ 	vec3 num = D * F * G;
  	float denom = max((4 * NdotV * NdotL), 0.001);
- 	return nom / denom;
+ 	return num / denom;
  }
 
  /* ============================================================================
@@ -64,9 +68,9 @@ float distBeckmann(float NdotH, float roughness) {
 
 	float NdotH2 = NdotH * NdotH;
 
-	float nom = exp((NdotH2 - 1.0) / a2 * NdotH2);
+	float num = exp((NdotH2 - 1.0) / a2 * NdotH2);
 	float denom = PI * a2 * (NdotH2 * NdotH2);
-	return nom / denom;
+	return num / denom;
 
 }
 
@@ -97,9 +101,6 @@ float geoSchlickGGX_IBL(float NdotV, float roughness) {
 	return NdotV / denom;
 }
 
-float geoSmith(vec3 N, vec3 V, vec3 L, float roughness) {
-	float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-
+float geoSmith(float NdotV, float NdotL, float roughness) {
 	return geoSchlickGGX(NdotV, roughness) * geoSchlickGGX(NdotL, roughness);
 }

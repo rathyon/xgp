@@ -28,7 +28,7 @@ void PBRMaterial::uploadData() {
     setVec3("albedo", _albedo);
     setFloat("metallic", _metallic);
     setFloat("roughness", _roughness);
-    setFloat("F0", _f0);
+    setFloat("f0", _f0);
 
     if (_albedoMap != GL_FALSE) {
         glActiveTexture(GL_TEXTURE0);

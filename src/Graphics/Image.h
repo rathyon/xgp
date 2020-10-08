@@ -21,10 +21,30 @@ namespace xgp {
 	GL_RGBA
 	};
 
+	const GLenum FloatPixelFormats[] = {
+		0,
+		GL_R16F,
+		GL_RG16F,
+		GL_RGB16F,
+		GL_RGBA16F
+	};
+
 	enum class CubemapType {
 		SKYBOX,
 		IRRADIANCE,
 		GGX
+	};
+
+	struct TexSampler {
+		GLenum wrapS;
+		GLenum wrapT;
+		GLenum wrapR;
+
+		GLenum min;
+		GLenum mag;
+
+		bool genMipmap;
+		bool floatData;
 	};
 
 	class Image {
@@ -46,6 +66,7 @@ namespace xgp {
 	class Texture : public Image {
 	public:
 		Texture(const std::string& filepath);
+		Texture(const std::string& filepath, TexSampler& sampler);
 		~Texture();
 	};
 

@@ -1,7 +1,5 @@
 #version 430
 
-#define LIGHT_COUNT 1
-
 /* ==============================================================================
         Stage Inputs
  ============================================================================== */
@@ -36,8 +34,10 @@ uniform cameraBlock {
     vec3 ViewPos;
 };
 
+const int LIGHT_COUNT = 1;
+
 layout (std140) uniform lightBlock {
-	Light light[LIGHT_COUNT];
+	Light lights[LIGHT_COUNT];
 };
 
 // Material parameters
@@ -94,7 +94,7 @@ void main() {
 	vec3 V = normalize(ViewPos - vsIn.position);
 
 	vec3 N = fetchNormal();
-	vec3 L = normalize(-light[0].direction);
+	vec3 L = normalize(-lights[0].direction);
 	vec3 H = normalize(L + V);
 	vec3 I = normalize(vsIn.position - ViewPos);
 	vec3 R = reflect(I, N);
@@ -106,8 +106,8 @@ void main() {
 	vec3 spec = vec3(0.0);
 
 	if (NdotL > 0.0){
-		diff = light[0].emission * ( fetchDiffuse() * NdotL);
-		spec = light[0].emission * ( fetchSpecular() * pow(NdotH, 64));
+		diff = lights[0].emission * ( fetchDiffuse() * NdotL);
+		spec = lights[0].emission * ( fetchSpecular() * pow(NdotH, 64));
 	}
 
 	outColor = vec4(toInverseGamma(reinhardToneMap(diff + spec), 2.2), fetchAlpha());

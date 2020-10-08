@@ -22,7 +22,6 @@ namespace xgp {
 		glm::vec3 direction;   // for directional and spot lights
 		float auxB;            // padding
 		glm::vec3 emission;    // "color" of the light
-		float auxC;            // padding
 		float linear;	       // attenuation
 		float quadratic;       // attenuation
 		int type;

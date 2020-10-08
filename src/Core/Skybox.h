@@ -8,7 +8,7 @@ namespace xgp {
 
 	class Skybox {
 	public:
-		Skybox(std::string directory);
+		Skybox(const std::string& env, const std::string& irradiance, const std::string& ggx);
 		~Skybox();
 
 		void draw() const;

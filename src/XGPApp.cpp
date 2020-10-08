@@ -6,6 +6,7 @@
 #include "Model.h"
 #include "Image.h"
 #include "BlinnPhongMaterial.h"
+#include "PBRMaterial.h"
 #include "Perspective.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
@@ -102,6 +103,16 @@ void XGPApp::loadShaders() {
 	Resource.addShader("blinnphong", shader);
 	_shaders.push_back(shader);
 
+	ShaderSource unrealVS = ShaderSource(GL_VERTEX_SHADER, SHADERS_DIR + "unreal.vs");
+	ShaderSource unrealFS = ShaderSource(GL_FRAGMENT_SHADER, SHADERS_DIR + "unreal.fs");
+	std::shared_ptr<Shader> unrealShader = std::make_shared<Shader>("unreal");
+	unrealShader->addShader(unrealVS);
+	unrealShader->addShader(unrealFS);
+	unrealShader->addShader(commonFS);
+	unrealShader->link();
+	Resource.addShader("unreal", unrealShader);
+	_shaders.push_back(unrealShader);
+
 	ShaderSource skyboxVS = ShaderSource(GL_VERTEX_SHADER, SHADERS_DIR + "skybox.vs");
 	ShaderSource skyboxFS = ShaderSource(GL_FRAGMENT_SHADER, SHADERS_DIR + "skybox.fs");
 	std::shared_ptr<Shader> skyboxShader = std::make_shared<Shader>("skybox");
@@ -114,7 +125,7 @@ void XGPApp::loadShaders() {
 }
 
 void XGPApp::loadImages() {
-	/**/
+	/** /
 	std::shared_ptr<Texture> _diffuseMap = std::make_shared<Texture>(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_basecolor.jpg");
 	Resource.addImage("diffuseMap", _diffuseMap);
 
@@ -122,22 +133,47 @@ void XGPApp::loadImages() {
 	Resource.addImage("normalMap", _normalMap);
 	/**/
 
-	Skybox _sky = Skybox(IMAGES_DIR + "forest/");
+	std::shared_ptr<Texture> albedo = std::make_shared<Texture>(IMAGES_DIR + "rustediron2_basecolor.png");
+	Resource.addImage("albedo", albedo);
+	std::shared_ptr<Texture> metallic = std::make_shared<Texture>(IMAGES_DIR + "rustediron2_metallic.png");
+	Resource.addImage("metallic", metallic);
+	std::shared_ptr<Texture> normal = std::make_shared<Texture>(IMAGES_DIR + "rustediron2_normal.png");
+	Resource.addImage("normal", normal);
+	std::shared_ptr<Texture> roughness = std::make_shared<Texture>(IMAGES_DIR + "rustediron2_roughness.png");
+	Resource.addImage("roughness", roughness);
+
+	TexSampler brdfParams;
+	brdfParams.wrapS = GL_CLAMP_TO_EDGE;
+	brdfParams.wrapT = GL_CLAMP_TO_EDGE;
+	brdfParams.mag = GL_LINEAR;
+	brdfParams.min = GL_LINEAR;
+	brdfParams.floatData = true;
+	brdfParams.genMipmap = false;
+	std::shared_ptr<Texture> brdfLUT = std::make_shared<Texture>(IMAGES_DIR + "brdfLUT.png", brdfParams);
+	Resource.addImage("brdfLUT", brdfLUT);
+
+	Skybox _sky = Skybox(IMAGES_DIR + "env.dds", IMAGES_DIR + "irradiance.dds", IMAGES_DIR + "ggx.dds");
 	_skyboxes.push_back(_sky);
 }
 
 void XGPApp::loadModels() {
-	/**/
-	std::shared_ptr<BlinnPhongMaterial> mat;
-	mat = std::make_shared<BlinnPhongMaterial>();
-	mat->setDiffuseTex(Resource.getImage("diffuseMap")->id());
-	mat->setNormalMap(Resource.getImage("normalMap")->id());
-	mat->setSpecular(glm::vec3(1.0f));
-	mat->setShininess(64.f);
+	std::shared_ptr<PBRMaterial> pbrmat;
+	pbrmat = std::make_shared<PBRMaterial>();
+	//pbrmat->setAlbedoMap(Resource.getImage("albedo")->id());
+	pbrmat->setAlbedo(glm::vec3(1.0f, 0.0f, 0.0f));
+	pbrmat->setNormalMap(Resource.getImage("normal")->id());
+	//pbrmat->setRoughnessMap(Resource.getImage("roughness")->id());
+	pbrmat->setRoughness(0.00f);
+	//pbrmat->setMetallicMap(Resource.getImage("metallic")->id());
+	pbrmat->setMetallic(0.01f);
 
-	std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "cube.obj");
+	//std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "cube.obj");
+	std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "sphere.obj");
+
+	/**/
 	for (std::shared_ptr<Model> model : models) {
-		model->setMaterial(mat);
+		//model->setMaterial(mat);
+		model->setMaterial(pbrmat);
 		_scene.addShape(model);
 	}
 	/**/
@@ -156,11 +192,11 @@ void XGPApp::prepare() {
 	Resource.initialize();
 
 	// Camera
-	_camera = new Perspective(_width, _height, glm::vec3(3.f, 3.f, 3.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.1f, 1000.f, 90.f);
+	_camera = new Perspective(_width, _height, glm::vec3(2.f, 2.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.1f, 1000.f, 90.f);
 
 	// Lights
-	std::shared_ptr<DirectionalLight> light1 = std::make_shared<DirectionalLight>(glm::vec3(1), glm::vec3(0.0f, -1.0f, -1.0f));
-	_scene.addLight(light1);
+	//std::shared_ptr<DirectionalLight> light1 = std::make_shared<DirectionalLight>(glm::vec3(1.0f), glm::vec3(0.0f, -1.0f, -1.0f));
+	//_scene.addLight(light1);
 
 	loadShaders();
 	loadImages();

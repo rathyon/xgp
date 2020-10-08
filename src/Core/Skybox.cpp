@@ -7,10 +7,10 @@
 
 using namespace xgp;
 
-Skybox::Skybox(std::string directory) {
-    _envMap = Cubemap(directory, CubemapType::SKYBOX).id();
-    _irradianceMap = Cubemap(directory, CubemapType::IRRADIANCE).id();
-    _ggxPrefilterMap = Cubemap(directory, CubemapType::GGX).id();
+Skybox::Skybox(const std::string& env, const std::string& irradiance, const std::string& ggx) {
+    _envMap = Cubemap(env, CubemapType::SKYBOX).id();
+    _irradianceMap = Cubemap(irradiance, CubemapType::IRRADIANCE).id();
+    _ggxPrefilterMap = Cubemap(ggx, CubemapType::GGX).id();
 
     genCubeGeometry();
 
@@ -24,6 +24,7 @@ void Skybox::draw() const{
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, _envMap);
+    glUniform1i(glGetUniformLocation(_prog, "envMap"), 0);
 
     glBindVertexArray(_vao);
     glDrawArrays(GL_TRIANGLES, 0, 36);
