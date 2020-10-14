@@ -125,14 +125,6 @@ void XGPApp::loadShaders() {
 }
 
 void XGPApp::loadImages() {
-	/** /
-	std::shared_ptr<Texture> _diffuseMap = std::make_shared<Texture>(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_basecolor.jpg");
-	Resource.addImage("diffuseMap", _diffuseMap);
-
-	std::shared_ptr<Texture> _normalMap = std::make_shared<Texture>(IMAGES_DIR + "Metal_tiles_002_SD/Metal_Tiles_002_normal.jpg");
-	Resource.addImage("normalMap", _normalMap);
-	/**/
-
 	std::shared_ptr<Texture> albedo = std::make_shared<Texture>(IMAGES_DIR + "rustediron2_basecolor.png");
 	Resource.addImage("albedo", albedo);
 	std::shared_ptr<Texture> metallic = std::make_shared<Texture>(IMAGES_DIR + "rustediron2_metallic.png");
@@ -161,33 +153,11 @@ void XGPApp::loadImages() {
 }
 
 void XGPApp::loadModels() {
-	std::shared_ptr<PBRMaterial> pbrmat;
-	pbrmat = std::make_shared<PBRMaterial>();
-	//pbrmat->setAlbedoMap(Resource.getImage("albedo")->id());
-	pbrmat->setAlbedo(glm::vec3(1.0f, 0.0f, 0.0f));
-	pbrmat->setNormalMap(Resource.getImage("normal")->id());
-	//pbrmat->setRoughnessMap(Resource.getImage("roughness")->id());
-	pbrmat->setRoughness(0.6f);
-	//pbrmat->setMetallicMap(Resource.getImage("metallic")->id());
-	pbrmat->setMetallic(0.1f);
-
-	//std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "cube.obj");
-	//std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "sphere.obj");
-
-	/** /
-	for (std::shared_ptr<Model> model : models) {
-		model->setMaterial(pbrmat);
-		_scene.addShape(model);
-	}
-	/**/
-
-	/**/
 	std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "crytek sponza/sponza.obj");
 	for (std::shared_ptr<Model> model : models) {
 		model->setScale(0.01f, 0.01f, 0.01f);
 		_scene.addShape(model);
 	}
-	/**/
 }
 
 
@@ -214,28 +184,8 @@ void XGPApp::prepare() {
 
 	changeSkybox(0);
 
-	// Buffers to the GPU
-	glGenBuffers(1, &_cameraBuffer);
-	glBindBuffer(GL_UNIFORM_BUFFER, _cameraBuffer);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraData), 0, GL_DYNAMIC_DRAW);
-	// Set block binding for all shaders -> OpenGL 4.2 and onwards allows this to be done in the shader!
-	for(std::shared_ptr<Shader> shader : _shaders) {
-		glUniformBlockBinding(shader->id(), glGetUniformBlockIndex(shader->id(), "cameraBlock"), CAMERA_BUFFER_IDX);
-	}
-	glBindBufferBase(GL_UNIFORM_BUFFER, CAMERA_BUFFER_IDX, _cameraBuffer);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-	glGenBuffers(1, &_lightsBuffer);
-	glBindBuffer(GL_UNIFORM_BUFFER, _lightsBuffer);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightData) * _scene.lights().size(), 0, GL_DYNAMIC_DRAW);
-	for (std::shared_ptr<Shader> shader : _shaders) {
-		glUniformBlockBinding(shader->id(), glGetUniformBlockIndex(shader->id(), "lightBlock"), LIGHTS_BUFFER_IDX);
-	}
-	glBindBufferBase(GL_UNIFORM_BUFFER, LIGHTS_BUFFER_IDX, _lightsBuffer);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-	uploadCameraData();
-	uploadLightData();
+	_renderer.prepare();
+	_renderer.setSkyboxDraw(false);
 }
 
 void XGPApp::loop() {
@@ -301,25 +251,7 @@ void XGPApp::update(double dt) {
 
 void XGPApp::render() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	/*
-		These uploads aren't necessary every cycle, only when they are changed
-	*/
-	if (_cameraUpdate) {
-		uploadCameraData();
-		_cameraUpdate = false;
-	}
-	if (_lightsUpdate) {
-		uploadLightData();
-		_lightsUpdate = false;
-	}
-	
-	for (std::shared_ptr<Shape> shape : _scene.shapes()) {
-		shape->draw();
-	}
-
-	//const Skybox& sky = _scene.skybox();
-	//sky.draw();
+	_renderer.render(_scene, *_camera);
 }
 
 void XGPApp::setTitle(const std::string& title) {
@@ -378,26 +310,4 @@ void XGPApp::mousePosCallback(double xpos, double ypos) {
 void XGPApp::changeSkybox(int id) {
 	_scene.setSkybox(_skyboxes[id]);
 	_currentSky = id;
-}
-
-void XGPApp::uploadCameraData() {
-	CameraData data;
-	data.viewMatrix = _camera->viewMatrix();
-	data.projMatrix = _camera->projMatrix();
-	data.viewProjMatrix = _camera->viewProjMatrix();
-	data.viewPos = _camera->position();
-
-	glBindBuffer(GL_UNIFORM_BUFFER, _cameraBuffer);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraData), &data, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}
-
-void XGPApp::uploadLightData() {
-	glBindBuffer(GL_UNIFORM_BUFFER, _lightsBuffer);
-	for (int i = 0; i < _scene.lights().size(); i++) {
-		LightData data;
-		_scene.lights()[i]->toData(data);
-		glBufferSubData(GL_UNIFORM_BUFFER, i * sizeof(LightData), sizeof(LightData), &data);
-	}
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

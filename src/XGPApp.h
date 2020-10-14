@@ -11,13 +11,9 @@
 #include <Scene.h>
 #include <Shader.h>
 #include <Skybox.h>
+#include <Renderer.h>
 
 namespace xgp {
-
-	enum BufferIndices {
-		CAMERA_BUFFER_IDX = 0,
-		LIGHTS_BUFFER_IDX = 1,
-	};
 
 	class XGPApp {
 	public:
@@ -46,9 +42,6 @@ namespace xgp {
 
 		void changeSkybox(int id);
 
-		void uploadCameraData();
-		void uploadLightData();
-
 		GLFWwindow* _window;
 		int _width, _height;
 		std::string _title;
@@ -60,8 +53,7 @@ namespace xgp {
 
 		Scene _scene;
 		Camera* _camera;
-		GLuint _cameraBuffer;
-		GLuint _lightsBuffer;
+		Renderer _renderer;
 		std::vector<std::shared_ptr<Shader>> _shaders;
 		std::vector<Skybox> _skyboxes;
 

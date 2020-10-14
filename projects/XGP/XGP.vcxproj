@@ -32,6 +32,7 @@
     <ClInclude Include="..\..\src\Graphics\Image.h" />
     <ClInclude Include="..\..\src\Graphics\Material.h" />
     <ClInclude Include="..\..\src\Graphics\PBRMaterial.h" />
+    <ClInclude Include="..\..\src\Graphics\Renderer.h" />
     <ClInclude Include="..\..\src\Graphics\Shader.h" />
     <ClInclude Include="..\..\src\Lights\DirectionalLight.h" />
     <ClInclude Include="..\..\src\Lights\Light.h" />
@@ -54,6 +55,7 @@
     <ClCompile Include="..\..\src\Graphics\Image.cpp" />
     <ClCompile Include="..\..\src\Graphics\Material.cpp" />
     <ClCompile Include="..\..\src\Graphics\PBRMaterial.cpp" />
+    <ClCompile Include="..\..\src\Graphics\Renderer.cpp" />
     <ClCompile Include="..\..\src\Graphics\Shader.cpp" />
     <ClCompile Include="..\..\src\Lights\DirectionalLight.cpp" />
     <ClCompile Include="..\..\src\Lights\Light.cpp" />

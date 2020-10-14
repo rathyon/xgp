@@ -25,17 +25,17 @@ struct Light {
 /* ==============================================================================
         Uniforms
  ============================================================================== */
-uniform cameraBlock {
+layout (binding = 0) uniform cameraBlock {
     mat4 ViewMatrix;
     mat4 ProjMatrix;
     mat4 ViewProjMatrix;
     vec3 ViewPos;
 };
 
-const int LIGHT_COUNT = 3;
+const int NUM_LIGHTS = 1;
 
-layout (std140) uniform lightBlock {
-	Light lights[LIGHT_COUNT];
+layout (std140, binding = 1) uniform lightBlock {
+	Light lights[NUM_LIGHTS];
 };
 
 // Material parameters
@@ -120,7 +120,7 @@ void main() {
     ============================================================================== */
     /**/
 	vec3 direct = vec3(0.0);
-	for(int i=0; i < LIGHT_COUNT; i++){
+	for(int i=0; i < NUM_LIGHTS; i++){
 		if(!lights[i].state){
 			continue;
 		}
