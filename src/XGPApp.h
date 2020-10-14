@@ -64,6 +64,9 @@ namespace xgp {
 		GLuint _lightsBuffer;
 		std::vector<std::shared_ptr<Shader>> _shaders;
 		std::vector<Skybox> _skyboxes;
+
+		unsigned int _currentSky;
+		bool _cameraUpdate, _lightsUpdate;
 	};
 }
 

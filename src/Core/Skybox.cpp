@@ -25,6 +25,17 @@ void Skybox::draw() const{
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, _envMap);
     glUniform1i(glGetUniformLocation(_prog, "envMap"), 0);
+    
+    // debug only
+    /**/
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, _irradianceMap);
+    glUniform1i(glGetUniformLocation(_prog, "irradianceMap"), 1);
+
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, _ggxPrefilterMap);
+    glUniform1i(glGetUniformLocation(_prog, "prefilterMap"), 2);
+    /**/
 
     glBindVertexArray(_vao);
     glDrawArrays(GL_TRIANGLES, 0, 36);

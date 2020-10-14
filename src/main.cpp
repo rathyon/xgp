@@ -2,14 +2,6 @@
 
 using namespace xgp;
 
-/*
-	TODO:
-*/
-
-/*
-*/
-
-
 XGPApp* app;
 
 void errorCallback(int error, const char* description) {

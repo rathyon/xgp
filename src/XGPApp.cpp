@@ -138,6 +138,7 @@ void XGPApp::loadImages() {
 	std::shared_ptr<Texture> metallic = std::make_shared<Texture>(IMAGES_DIR + "rustediron2_metallic.png");
 	Resource.addImage("metallic", metallic);
 	std::shared_ptr<Texture> normal = std::make_shared<Texture>(IMAGES_DIR + "rustediron2_normal.png");
+	//std::shared_ptr<Texture> normal = std::make_shared<Texture>(IMAGES_DIR + "testNormal.png");
 	Resource.addImage("normal", normal);
 	std::shared_ptr<Texture> roughness = std::make_shared<Texture>(IMAGES_DIR + "rustediron2_roughness.png");
 	Resource.addImage("roughness", roughness);
@@ -152,8 +153,11 @@ void XGPApp::loadImages() {
 	std::shared_ptr<Texture> brdfLUT = std::make_shared<Texture>(IMAGES_DIR + "brdfLUT.png", brdfParams);
 	Resource.addImage("brdfLUT", brdfLUT);
 
-	Skybox _sky = Skybox(IMAGES_DIR + "env.dds", IMAGES_DIR + "irradiance.dds", IMAGES_DIR + "ggx.dds");
-	_skyboxes.push_back(_sky);
+	_skyboxes.push_back(Skybox(IMAGES_DIR + "blue_grotto_4k/env.dds", IMAGES_DIR + "blue_grotto_4k/irradiance.dds", IMAGES_DIR + "blue_grotto_4k/ggx.dds"));
+	_skyboxes.push_back(Skybox(IMAGES_DIR + "palermo_sidewalk_4k/env.dds", IMAGES_DIR + "palermo_sidewalk_4k/irradiance.dds", IMAGES_DIR + "palermo_sidewalk_4k/ggx.dds"));
+	_skyboxes.push_back(Skybox(IMAGES_DIR + "snowy_forest_path_02_4k/env.dds", IMAGES_DIR + "snowy_forest_path_02_4k/irradiance.dds", IMAGES_DIR + "snowy_forest_path_02_4k/ggx.dds"));
+	_skyboxes.push_back(Skybox(IMAGES_DIR + "studio_small_03_4k/env.dds", IMAGES_DIR + "studio_small_03_4k/irradiance.dds", IMAGES_DIR + "studio_small_03_4k/ggx.dds"));
+	_skyboxes.push_back(Skybox(IMAGES_DIR + "syferfontein_0d_clear_4k/env.dds", IMAGES_DIR + "syferfontein_0d_clear_4k/irradiance.dds", IMAGES_DIR + "syferfontein_0d_clear_4k/ggx.dds"));
 }
 
 void XGPApp::loadModels() {
@@ -163,22 +167,21 @@ void XGPApp::loadModels() {
 	pbrmat->setAlbedo(glm::vec3(1.0f, 0.0f, 0.0f));
 	pbrmat->setNormalMap(Resource.getImage("normal")->id());
 	//pbrmat->setRoughnessMap(Resource.getImage("roughness")->id());
-	pbrmat->setRoughness(0.00f);
+	pbrmat->setRoughness(0.6f);
 	//pbrmat->setMetallicMap(Resource.getImage("metallic")->id());
-	pbrmat->setMetallic(0.01f);
+	pbrmat->setMetallic(0.1f);
 
 	//std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "cube.obj");
-	std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "sphere.obj");
+	//std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "sphere.obj");
 
-	/**/
+	/** /
 	for (std::shared_ptr<Model> model : models) {
-		//model->setMaterial(mat);
 		model->setMaterial(pbrmat);
 		_scene.addShape(model);
 	}
 	/**/
 
-	/** /
+	/**/
 	std::vector<std::shared_ptr<Model>> models = loadOBJ(MODELS_DIR + "crytek sponza/sponza.obj");
 	for (std::shared_ptr<Model> model : models) {
 		model->setScale(0.01f, 0.01f, 0.01f);
@@ -192,11 +195,18 @@ void XGPApp::prepare() {
 	Resource.initialize();
 
 	// Camera
-	_camera = new Perspective(_width, _height, glm::vec3(2.f, 2.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.1f, 1000.f, 90.f);
+	_camera = new Perspective(_width, _height, glm::vec3(3.f, 3.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f), 0.1f, 1000.f, 90.f);
 
 	// Lights
-	//std::shared_ptr<DirectionalLight> light1 = std::make_shared<DirectionalLight>(glm::vec3(1.0f), glm::vec3(0.0f, -1.0f, -1.0f));
-	//_scene.addLight(light1);
+	/** /
+	std::shared_ptr<DirectionalLight> light1 = std::make_shared<DirectionalLight>(glm::vec3(1.0f), glm::vec3(0.0f, -1.0f, -1.0f));
+	_scene.addLight(light1);
+	/**/
+
+	/**/
+	std::shared_ptr<PointLight> plight1 = std::make_shared<PointLight>(glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.0f, 2.f, 0.f));
+	_scene.addLight(plight1);
+	/**/
 
 	loadShaders();
 	loadImages();
@@ -223,6 +233,9 @@ void XGPApp::prepare() {
 	}
 	glBindBufferBase(GL_UNIFORM_BUFFER, LIGHTS_BUFFER_IDX, _lightsBuffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	uploadCameraData();
+	uploadLightData();
 }
 
 void XGPApp::loop() {
@@ -251,6 +264,7 @@ void XGPApp::update(double dt) {
 	if (_mouseBtn[GLFW_MOUSE_BUTTON_LEFT]) {
 		_camera->updateOrientation(-_mouseDy * dt * CAMERA_LOOK_SPEED, -_mouseDx * dt * CAMERA_LOOK_SPEED);
 		_camera->updateViewMatrix();
+		_cameraUpdate = true;
 	}
 
 	_mouseDx = 0; _mouseDy = 0;
@@ -274,21 +288,38 @@ void XGPApp::update(double dt) {
 	if (moveDir != glm::vec3(0)) {
 		_camera->setPosition(_camera->position() + glm::normalize(moveDir) * (float)dt * CAMERA_MOVEMENT_SPEED);
 		_camera->updateViewMatrix();
+		_cameraUpdate = true;
+	}
+
+	// Change skybox
+	if (_keys[GLFW_KEY_E]) {
+		unsigned int newSky = ((size_t)_currentSky + 1) % _skyboxes.size();
+		changeSkybox(newSky);
+		_keys[GLFW_KEY_E] = false;
 	}
 }
 
 void XGPApp::render() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	uploadCameraData();
-	uploadLightData();
-
+	/*
+		These uploads aren't necessary every cycle, only when they are changed
+	*/
+	if (_cameraUpdate) {
+		uploadCameraData();
+		_cameraUpdate = false;
+	}
+	if (_lightsUpdate) {
+		uploadLightData();
+		_lightsUpdate = false;
+	}
+	
 	for (std::shared_ptr<Shape> shape : _scene.shapes()) {
 		shape->draw();
 	}
 
-	const Skybox& sky = _scene.skybox();
-	sky.draw();
+	//const Skybox& sky = _scene.skybox();
+	//sky.draw();
 }
 
 void XGPApp::setTitle(const std::string& title) {
@@ -312,6 +343,7 @@ void XGPApp::reshapeCallback(int width, int height) {
 	_width = width;
 	_height = height;
 	_camera->updateProjMatrix(width, height);
+	_cameraUpdate = true;
 	glViewport(0, 0, width, height);
 }
 
@@ -345,6 +377,7 @@ void XGPApp::mousePosCallback(double xpos, double ypos) {
 
 void XGPApp::changeSkybox(int id) {
 	_scene.setSkybox(_skyboxes[id]);
+	_currentSky = id;
 }
 
 void XGPApp::uploadCameraData() {

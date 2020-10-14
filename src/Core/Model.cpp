@@ -2,6 +2,7 @@
 #include <Resources.h>
 #include <Utils.h>
 #include <BlinnPhongMaterial.h>
+#include <PBRMaterial.h>
 
 #include <Geometry.h>
 
@@ -10,6 +11,8 @@
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
+
+const bool LOAD_PBR_MATERIAL = true;
 
 using namespace xgp;
 
@@ -85,59 +88,125 @@ std::vector<std::shared_ptr<Model>> xgp::loadOBJ(const std::string& filePath) {
     std::vector<std::shared_ptr<Material>> materials;
 
     // Currently loading as BP material, will switch to PBR in the future
-    for (tinyobj::material_t objMaterial : objMaterials) {
-        std::shared_ptr<BlinnPhongMaterial> material = std::make_shared<BlinnPhongMaterial>();
+    if (LOAD_PBR_MATERIAL) {
+        for (tinyobj::material_t objMaterial : objMaterials) {
+            std::shared_ptr<PBRMaterial> material = std::make_shared<PBRMaterial>();
 
-        material->setAmbient(glm::vec3(objMaterial.ambient[0], objMaterial.ambient[1], objMaterial.ambient[2]));
-        material->setShininess(objMaterial.shininess);
-
-        if (objMaterial.diffuse_texname.size() > 0) {
-            if(Resource.getImage(objMaterial.diffuse_texname))
-                material->setDiffuseTex(Resource.getImage(objMaterial.diffuse_texname)->id());
-            else {
-                std::shared_ptr<Texture> diffuseMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.diffuse_texname);
-                Resource.addImage(objMaterial.diffuse_texname, diffuseMap);
-                material->setDiffuseTex(diffuseMap->id());
+            // Albedo
+            if (objMaterial.diffuse_texname.size() > 0) {
+                if (Resource.getImage(objMaterial.diffuse_texname))
+                    material->setAlbedoMap(Resource.getImage(objMaterial.diffuse_texname)->id());
+                else {
+                    std::shared_ptr<Texture> albedoMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.diffuse_texname);
+                    Resource.addImage(objMaterial.diffuse_texname, albedoMap);
+                    material->setAlbedoMap(albedoMap->id());
+                }
             }
-        }
-        else {
-            material->setDiffuse(glm::vec3(objMaterial.diffuse[0], objMaterial.diffuse[1], objMaterial.diffuse[2]));
-        }
-
-        if (objMaterial.specular_texname.size() > 0) {
-            if (Resource.getImage(objMaterial.specular_texname))
-                material->setSpecularTex(Resource.getImage(objMaterial.specular_texname)->id());
             else {
-                std::shared_ptr<Texture> specularMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.specular_texname);
-                Resource.addImage(objMaterial.specular_texname, specularMap);
-                material->setSpecularTex(specularMap->id());
+                material->setAlbedo(glm::vec3(objMaterial.diffuse[0], objMaterial.diffuse[1], objMaterial.diffuse[2]));
             }
-        }
-        else {
-            material->setSpecular(glm::vec3(objMaterial.specular[0], objMaterial.specular[1], objMaterial.specular[2]));
-        }
 
-        if (objMaterial.normal_texname.size() > 0) {
-            if (Resource.getImage(objMaterial.normal_texname))
-                material->setNormalMap(Resource.getImage(objMaterial.normal_texname)->id());
-            else {
-                std::shared_ptr<Texture> normalMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.normal_texname);
-                Resource.addImage(objMaterial.normal_texname, normalMap);
-                material->setNormalMap(normalMap->id());
+            // Roughness
+            if (objMaterial.roughness_texname.size() > 0) {
+                if (Resource.getImage(objMaterial.roughness_texname))
+                    material->setRoughnessMap(Resource.getImage(objMaterial.roughness_texname)->id());
+                else {
+                    std::shared_ptr<Texture> roughnessMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.roughness_texname);
+                    Resource.addImage(objMaterial.roughness_texname, roughnessMap);
+                    material->setRoughnessMap(roughnessMap->id());
+                }
             }
-        }
+            else {
+                material->setRoughness(objMaterial.roughness);
+            }
 
-        // also known as height map (I think?)
-        if (objMaterial.bump_texname.size() > 0) {
-            if (Resource.getImage(objMaterial.bump_texname))
-                material->setHeightMap(Resource.getImage(objMaterial.bump_texname)->id());
-            else {
-                std::shared_ptr<Texture> heightMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.bump_texname);
-                Resource.addImage(objMaterial.bump_texname, heightMap);
-                material->setHeightMap(heightMap->id());
+            // Metallic
+            if (objMaterial.metallic_texname.size() > 0) {
+                if (Resource.getImage(objMaterial.metallic_texname))
+                    material->setMetallicMap(Resource.getImage(objMaterial.metallic_texname)->id());
+                else {
+                    std::shared_ptr<Texture> metallicMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.metallic_texname);
+                    Resource.addImage(objMaterial.metallic_texname, metallicMap);
+                    material->setMetallicMap(metallicMap->id());
+                }
             }
+            else {
+                material->setMetallic(objMaterial.metallic);
+            }
+
+            // Normal map
+            if (objMaterial.bump_texname.size() > 0) {
+                if (Resource.getImage(objMaterial.bump_texname))
+                    material->setNormalMap(Resource.getImage(objMaterial.bump_texname)->id());
+                else {
+                    std::shared_ptr<Texture> normalMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.bump_texname);
+                    Resource.addImage(objMaterial.bump_texname, normalMap);
+                    material->setNormalMap(normalMap->id());
+                }
+            }
+            materials.push_back(material);
         }
-        materials.push_back(material);
+    }
+    else {
+        for (tinyobj::material_t objMaterial : objMaterials) {
+            std::shared_ptr<BlinnPhongMaterial> material = std::make_shared<BlinnPhongMaterial>();
+
+            material->setAmbient(glm::vec3(objMaterial.ambient[0], objMaterial.ambient[1], objMaterial.ambient[2]));
+            material->setShininess(objMaterial.shininess);
+
+            // Diffuse tex
+            if (objMaterial.diffuse_texname.size() > 0) {
+                if (Resource.getImage(objMaterial.diffuse_texname))
+                    material->setDiffuseTex(Resource.getImage(objMaterial.diffuse_texname)->id());
+                else {
+                    std::shared_ptr<Texture> diffuseMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.diffuse_texname);
+                    Resource.addImage(objMaterial.diffuse_texname, diffuseMap);
+                    material->setDiffuseTex(diffuseMap->id());
+                }
+            }
+            else {
+                material->setDiffuse(glm::vec3(objMaterial.diffuse[0], objMaterial.diffuse[1], objMaterial.diffuse[2]));
+            }
+
+            // Specular tex
+            if (objMaterial.specular_texname.size() > 0) {
+                if (Resource.getImage(objMaterial.specular_texname))
+                    material->setSpecularTex(Resource.getImage(objMaterial.specular_texname)->id());
+                else {
+                    std::shared_ptr<Texture> specularMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.specular_texname);
+                    Resource.addImage(objMaterial.specular_texname, specularMap);
+                    material->setSpecularTex(specularMap->id());
+                }
+            }
+            else {
+                material->setSpecular(glm::vec3(objMaterial.specular[0], objMaterial.specular[1], objMaterial.specular[2]));
+            }
+
+            // Normal map
+            if (objMaterial.bump_texname.size() > 0) {
+                if (Resource.getImage(objMaterial.bump_texname))
+                    material->setNormalMap(Resource.getImage(objMaterial.bump_texname)->id());
+                else {
+                    std::shared_ptr<Texture> normalMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.bump_texname);
+                    Resource.addImage(objMaterial.bump_texname, normalMap);
+                    material->setNormalMap(normalMap->id());
+                }
+            }
+
+            // also known as height map (I think?)
+            /** /
+            if (objMaterial.bump_texname.size() > 0) {
+                if (Resource.getImage(objMaterial.bump_texname))
+                    material->setHeightMap(Resource.getImage(objMaterial.bump_texname)->id());
+                else {
+                    std::shared_ptr<Texture> heightMap = std::make_shared<Texture>(p.parent_path().string() + "/" + objMaterial.bump_texname);
+                    Resource.addImage(objMaterial.bump_texname, heightMap);
+                    material->setHeightMap(heightMap->id());
+                }
+            }
+            /**/
+            materials.push_back(material);
+        }
     }
 
     std::vector<std::shared_ptr<Model>> models;

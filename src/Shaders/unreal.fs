@@ -17,8 +17,6 @@ struct Light {
 	vec3 position;
 	vec3 direction;
 	vec3 emission;
-	float linear;
-	float quadratic;
 	int type;
 	bool state;
 	float cutoff;
@@ -34,7 +32,7 @@ uniform cameraBlock {
     vec3 ViewPos;
 };
 
-const int LIGHT_COUNT = 1;
+const int LIGHT_COUNT = 3;
 
 layout (std140) uniform lightBlock {
 	Light lights[LIGHT_COUNT];
@@ -96,7 +94,7 @@ float fetchParameter(sampler2D samp, float val) {
 }
 
 vec3 fetchNormal() {
-	vec3 normal = texture(normalMap, vsIn.texCoords).rgb;
+	vec3 normal = texture(normalMap, vsIn.texCoords).xyz;
 	normal = normal * 2.0 - 1.0; // remap from [0,1] to [-1,1]
 	return normalize(vsIn.TBN * normal); //from tangent space to world space
 }
@@ -106,7 +104,8 @@ float fetchAlpha() {
 }
 
 void main() {
-	vec3 N = fetchNormal(); 
+	vec3 N = fetchNormal();
+	//vec3 N = vsIn.normal;
     vec3 V = normalize(ViewPos - vsIn.position);
 
     vec3 albedo = fetchAlbedo();
@@ -119,6 +118,7 @@ void main() {
 	/* ==============================================================================
             Direct Lighting
     ============================================================================== */
+    /**/
 	vec3 direct = vec3(0.0);
 	for(int i=0; i < LIGHT_COUNT; i++){
 		if(!lights[i].state){
@@ -167,15 +167,17 @@ void main() {
 
     	direct += (diffuse + specular) * Li * NdotL;
 	}
-
+	/**/
 	/* ==============================================================================
             Indirect/Ambient Lighting (IBL)
     ============================================================================== */
+    /** /
     // Diffuse component
     vec3 irradiance = texture(irradianceMap, N).rgb;
 
     vec3 kS = fresnelSchlickRoughness(NdotV, F0, rough);
 	vec3 kD = 1.0 - kS;
+	kD = kD * (1.0 - metallic);
 
 	vec3 diffuse = irradiance * albedo;
 
@@ -186,11 +188,12 @@ void main() {
 
 	vec3 specular = pref * (kS * brdf.x + brdf.y);
 
-	vec3 ambient = kD * diffuse + specular;
+	vec3 ambient = (kD * diffuse) + specular;
+	/**/
 	/* ==============================================================================
             Post-processing
-    ============================================================================== */ 
-	vec3 color = reinhardToneMap(direct + ambient);
+    ============================================================================== */
+	vec3 color = reinhardToneMap(direct);
 	color = toInverseGamma(color, 2.2);
 	outColor = vec4(color, fetchAlpha());
 }

@@ -17,8 +17,6 @@ struct Light {
 	vec3 position;
 	vec3 direction;
 	vec3 emission;
-	float linear;
-	float quadratic;
 	int type;
 	bool state;
 	float cutoff;

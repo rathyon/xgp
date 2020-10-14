@@ -3,13 +3,7 @@
 
 A small OpenGL app to develop all kinds of computer graphics techniques on my spare time.
 
-## Current Goals
+## Current Features
 
-- PBR Shading
-	- (TODO: list small goals)
-
-- Advanced Shadow techniques
-
-- Global Illumination (Diffuse)
-
-- Global Illumination (Specular)
+- PBR Shading (based on UE4)
+- Loading of DDS textures and cubemaps (using GLI)

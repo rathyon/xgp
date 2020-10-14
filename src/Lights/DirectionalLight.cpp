@@ -18,8 +18,6 @@ void DirectionalLight::toData(LightData& data) const {
 	data.position = _position;
 	data.direction = _direction;
 	data.emission = _emission;
-	data.linear = 0.0f;
-	data.quadratic = 0.0f;
 	data.type = LightType::LIGHTYPE_DIR;
 	data.state = _on;
 	data.cutoff = 0.0f;

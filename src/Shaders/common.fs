@@ -53,8 +53,8 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness) {
 
  vec3 specCookTorrance(float NdotV, float NdotL, float D, vec3 F, float G) {
  	vec3 num = D * F * G;
- 	float denom = max((4 * NdotV * NdotL), 0.001);
- 	return num / denom;
+ 	float denom = (4 * NdotV * NdotL); 
+ 	return num / max(denom, 0.001); // 0.001 to prevent divide by zero.
  }
 
  /* ============================================================================
@@ -82,7 +82,7 @@ float distGGX(float NdotH, float roughness) {
 
 	float denom = (NdotH2 * (a2 - 1.0) + 1.0);
 	denom = PI * (denom * denom);
-	return a2 / denom;
+	return a2 / max(denom, 0.001); // prevent divide by zero for roughness=0.0 and NdotH=1.0
 }
 
 // Geometry Functions
