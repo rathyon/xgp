@@ -24,7 +24,6 @@ int main() {
 	app = new XGPApp("XGP - eXperimental Graphics Program", 640, 480);
 
 	app->init();
-
 	//Set callbacks
 	glfwSetErrorCallback(errorCallback);
 	glfwSetFramebufferSizeCallback(app->window(), reshapeCallback);

@@ -30,8 +30,9 @@ namespace xgp {
     public:
         Renderer();
 
-        void prepare();
+        void prepare(int width, int height, GLuint deferredProg);
         void render(const Scene& scene, const Camera& camera);
+        void reshape(int width, int height);
 
         float gamma() const;
         void setGamma(float gamma);
@@ -53,7 +54,17 @@ namespace xgp {
         ToneOperator _tone;
 
         bool _drawSkybox;
-        
+
+        GLuint _deferredProg;
+        GLuint _quadVAO;
+
+        GLuint _gBuffer;
+        GLuint _gPosition;
+        GLuint _gNormal;
+        GLuint _gAlbedo;
+        GLuint _gMetalRough;
+        GLuint _gDepth;
+
         GLuint _lightsBuffer;
         GLuint _cameraBuffer;
         GLuint _rendererBuffer;

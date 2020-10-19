@@ -37,7 +37,7 @@ void XGPApp::init() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	//Enable MSAA
-	glfwWindowHint(GLFW_SAMPLES, 4);
+	//glfwWindowHint(GLFW_SAMPLES, 4);
 
 	_window = glfwCreateWindow(_width, _height, _title.c_str(), NULL, NULL);
 	if (!_window)
@@ -65,7 +65,7 @@ void XGPApp::init() {
 	std::cerr << "GLSL version " << glslVersion << std::endl;
 
 	// Initialize OpenGL state
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
@@ -74,9 +74,9 @@ void XGPApp::init() {
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_MULTISAMPLE);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_MULTISAMPLE);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	int fwidth, fheight;
@@ -112,6 +112,26 @@ void XGPApp::loadShaders() {
 	unrealShader->link();
 	Resource.addShader("unreal", unrealShader);
 	_shaders.push_back(unrealShader);
+
+	ShaderSource gbufferVS = ShaderSource(GL_VERTEX_SHADER, SHADERS_DIR + "gbuffer.vs");
+	ShaderSource gbufferFS = ShaderSource(GL_FRAGMENT_SHADER, SHADERS_DIR + "gbuffer.fs");
+	std::shared_ptr<Shader> gbufferShader = std::make_shared<Shader>("gbuffer");
+	gbufferShader->addShader(gbufferVS);
+	gbufferShader->addShader(gbufferFS);
+	gbufferShader->addShader(commonFS);
+	gbufferShader->link();
+	Resource.addShader("gbuffer", gbufferShader);
+	_shaders.push_back(gbufferShader);
+
+	ShaderSource unrealDeferredVS = ShaderSource(GL_VERTEX_SHADER, SHADERS_DIR + "unreal_deferred.vs");
+	ShaderSource unrealDeferredFS = ShaderSource(GL_FRAGMENT_SHADER, SHADERS_DIR + "unreal_deferred.fs");
+	std::shared_ptr<Shader> unrealDeferredShader = std::make_shared<Shader>("unreal_deferred");
+	unrealDeferredShader->addShader(unrealDeferredVS);
+	unrealDeferredShader->addShader(unrealDeferredFS);
+	unrealDeferredShader->addShader(commonFS);
+	unrealDeferredShader->link();
+	Resource.addShader("unreal_deferred", unrealDeferredShader);
+	_shaders.push_back(unrealDeferredShader);
 
 	ShaderSource skyboxVS = ShaderSource(GL_VERTEX_SHADER, SHADERS_DIR + "skybox.vs");
 	ShaderSource skyboxFS = ShaderSource(GL_FRAGMENT_SHADER, SHADERS_DIR + "skybox.fs");
@@ -184,7 +204,13 @@ void XGPApp::prepare() {
 
 	changeSkybox(0);
 
-	_renderer.prepare();
+	// TODO: toggle between deferred and forward rendering
+	for (std::shared_ptr<Shape> shape : _scene.shapes()) {
+		GLuint gbufferProg = Resource.getShader("gbuffer")->id();
+		shape->material()->setProgram(gbufferProg);
+	}
+
+	_renderer.prepare(_width, _height, Resource.getShader("unreal_deferred")->id());
 	_renderer.setSkyboxDraw(false);
 }
 
@@ -199,7 +225,6 @@ void XGPApp::loop() {
 		// Limit the delta time to avoid large intervals
 		if (dt > 0.25f)
 			dt = 0.25f;
-
 		update(dt);
 		render();
 
@@ -250,8 +275,9 @@ void XGPApp::update(double dt) {
 }
 
 void XGPApp::render() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	_renderer.render(_scene, *_camera);
+	// TODO: remove error check or leave it only on debug mode
+	Utils::checkOpenGLError("Error rendering!");
 }
 
 void XGPApp::setTitle(const std::string& title) {
@@ -276,6 +302,7 @@ void XGPApp::reshapeCallback(int width, int height) {
 	_height = height;
 	_camera->updateProjMatrix(width, height);
 	_cameraUpdate = true;
+	_renderer.reshape(width, height);
 	glViewport(0, 0, width, height);
 }
 

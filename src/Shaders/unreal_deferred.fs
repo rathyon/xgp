@@ -3,12 +3,7 @@
 /* ==============================================================================
         Stage Inputs
  ============================================================================== */
-in FragData {
-    vec3 position;
-    vec3 normal; 
-    vec2 texCoords;
-    mat3 TBN;
-} vsIn;
+in vec2 texCoords;
 
 /* ==============================================================================
         Structures
@@ -38,16 +33,11 @@ layout (std140, binding = 1) uniform lightBlock {
 	Light lights[NUM_LIGHTS];
 };
 
-// Material parameters
-uniform sampler2D albedoMap;
-uniform sampler2D metallicMap;
-uniform sampler2D roughnessMap;
-uniform sampler2D normalMap;
-
-uniform vec3 albedo;
-uniform float metallic;
-uniform float roughness;
-uniform float f0;
+// GBuffer Maps
+uniform sampler2D gPosition;
+uniform sampler2D gNormal;
+uniform sampler2D gAlbedo;
+uniform sampler2D gMetalRough;
 
 // IBL precomputation
 uniform samplerCube irradianceMap;
@@ -77,42 +67,20 @@ float geoSmith(float NdotV, float NdotL, float roughness);
  ============================================================================== */
 out vec4 outColor;
 
-vec3 fetchAlbedo() {
-	if(albedo.r >= 0.0)
-		return albedo;
-	else
-		return toLinearRGB(texture(albedoMap, vsIn.texCoords).rgb, 2.2);
-}
-
-float fetchParameter(sampler2D samp, float val) {
-	if(val >= 0.0)
-		return val;
-	else
-		return texture(samp, vsIn.texCoords).r;
-}
-
-vec3 fetchNormal() {
-	vec3 normal = texture(normalMap, vsIn.texCoords).xyz;
-	normal = normal * 2.0 - 1.0; // remap from [0,1] to [-1,1]
-	return normalize(vsIn.TBN * normal); //from tangent space to world space
-}
-
-float fetchAlpha() {
-	return texture(albedoMap, vsIn.texCoords).a;
-}
-
 void main() {
-	vec3 N = fetchNormal();
-	//vec3 N = vsIn.normal;
-    vec3 V = normalize(ViewPos - vsIn.position);
+	vec3 Position = texture(gPosition, texCoords).rgb;
+	vec3 N = texture(gNormal, texCoords).rgb;
+    vec3 V = normalize(ViewPos - Position);
 
-    vec3 albedo = fetchAlbedo();
-    float metal = fetchParameter(metallicMap, metallic);
-    float rough = fetchParameter(roughnessMap, roughness);
+    vec3 albedo = texture(gAlbedo, texCoords).rgb;
+    float metallic = texture(gMetalRough, texCoords).r;
+    float rough = texture(gMetalRough, texCoords).g;
+    float f0 = texture(gMetalRough, texCoords).b;
 
-    vec3 F0 = mix(vec3(f0), albedo, metal);
+    vec3 F0 = mix(vec3(f0), albedo, metallic);
 
     float NdotV = max(dot(N, V), 0.0);
+
 	/* ==============================================================================
             Direct Lighting
     ============================================================================== */
@@ -133,26 +101,28 @@ void main() {
 		}
 		// point lights
 		else if(lights[i].type == 1){
-			L = normalize(lights[i].position - vsIn.position);
-			float distance = length(lights[i].position - vsIn.position);
+			L = normalize(lights[i].position - Position);
+			float distance = length(lights[i].position - Position);
     		Li = lights[i].emission * (1.0 / (distance * distance)); // inverse square law
 		}
 		// spot lights (for now they are the same as point lights)
 		else{
-			L = normalize(lights[i].position - vsIn.position);
-			float distance = length(lights[i].position - vsIn.position);
+			L = normalize(lights[i].position - Position);
+			float distance = length(lights[i].position - Position);
     		Li = lights[i].emission * (1.0 / (distance * distance)); // inverse square law
 		}
 
 		vec3 H = normalize(V + L);
 		float NdotH = max(dot(N, H), 0.0);
 		float NdotL = max(dot(N, L), 0.0);
-		float HdotV = max(dot(H, V), 0.0);
+		float HdotV = max(dot(H, V), 0.0);	
 
     	// NDF Term
     	float D = distGGX(NdotH, rough);
+
     	// Fresnel Term
     	vec3 F = fresnelSchlick(HdotV, F0);
+
     	// Geometric Term
     	float G = geoSmith(NdotV, NdotL, rough);
 
@@ -191,7 +161,10 @@ void main() {
 	/* ==============================================================================
             Post-processing
     ============================================================================== */
+    /**/
 	vec3 color = reinhardToneMap(direct);
 	color = toInverseGamma(color, 2.2);
-	outColor = vec4(color, fetchAlpha());
+	//outColor = vec4(color, fetchAlpha());
+	outColor = vec4(color, 1.0);
+	/**/
 }
